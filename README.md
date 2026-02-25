@@ -24,6 +24,9 @@ The repo is designed for limited, compliant data supply and iterative model impr
 - Data budget example: `docs/05-data_budget.yaml.example`
 - Sampling report template: `docs/06-sampling_report-template.md`
 - Data quality report template: `docs/07-data_quality_report-template.md`
+- Data/ sampling technical design: `docs/08-技术方案-数据维度与采样设计.md`
+- Distillation flywheel technical design: `docs/09-技术方案-蒸馏与多轮对撞飞轮.md`
+- Experiment design and milestones: `docs/10-实验设计与里程碑.md`
 
 ## Collaboration workflow
 1. Open an issue using the templates in `.github/ISSUE_TEMPLATE/`.
