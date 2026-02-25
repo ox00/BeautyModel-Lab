@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contribution Guide
+    url: https://github.com/ox00/BeautyModel-Lab/blob/main/CONTRIBUTING.md
+    about: Read contribution and compliance rules before filing issues.

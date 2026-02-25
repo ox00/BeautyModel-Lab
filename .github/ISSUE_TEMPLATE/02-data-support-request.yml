@@ -1,0 +1,67 @@
+name: Data Support Request
+about: Request a controlled data package for one iteration
+labels: ["data-request"]
+body:
+  - type: input
+    id: iteration
+    attributes:
+      label: Iteration
+      placeholder: e.g. v1.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      placeholder: business scenario and target users
+    validations:
+      required: true
+
+  - type: textarea
+    id: required_fields
+    attributes:
+      label: Required data fields/tables
+      placeholder: |
+        - product_sku: ...
+        - review_feedback: ...
+        - trend_signal: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: quota
+    attributes:
+      label: Requested quota
+      placeholder: |
+        SKU:
+        Reviews:
+        Trend keywords:
+        Ingredients:
+    validations:
+      required: true
+
+  - type: dropdown
+    id: level
+    attributes:
+      label: Data level requested
+      options:
+        - P0 (train package)
+        - P1 (restricted)
+        - P2 (blind test only)
+    validations:
+      required: true
+
+  - type: textarea
+    id: compliance
+    attributes:
+      label: Compliance handling plan
+      placeholder: no PII, aggregated output, internal use only
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Data acceptance criteria
+      placeholder: completeness, duplicate rate, freshness, etc.

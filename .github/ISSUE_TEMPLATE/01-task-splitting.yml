@@ -1,0 +1,70 @@
+name: Task Splitting
+about: Create a scoped task for model/data/docs/engineering work
+labels: ["task"]
+body:
+  - type: dropdown
+    id: workstream
+    attributes:
+      label: Workstream
+      options:
+        - data
+        - model
+        - eval
+        - docs
+        - engineering
+        - compliance
+    validations:
+      required: true
+
+  - type: input
+    id: objective
+    attributes:
+      label: Objective
+      placeholder: One-sentence objective
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included and excluded
+      placeholder: |
+        Included:
+        - ...
+        Excluded:
+        - ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: Deliverables
+      placeholder: |
+        - file/report/output 1
+        - file/report/output 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] criterion 1
+        - [ ] criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / Risks
+      placeholder: upstream dependency, data availability, compliance risk
+
+  - type: input
+    id: due_date
+    attributes:
+      label: Target Date
+      placeholder: YYYY-MM-DD
