@@ -1,0 +1,80 @@
+# BeautyModel data budget template (2-week iteration)
+meta:
+  project: BeautyModel
+  iteration: v1.0
+  owner: tech-arch
+  created_at: "2026-02-25"
+  window:
+    start: "2026-02-26"
+    end: "2026-03-11"
+
+scope:
+  primary_scenario: "敏感肌修护推荐"
+  optional_scenario: "趋势词驱动同款推荐"
+  channels: ["xhs", "ecom"]
+
+quota:
+  sku_total:
+    min: 800
+    target: 1000
+    max: 1500
+  reviews_total:
+    min: 10000
+    target: 20000
+    max: 30000
+  trend_keywords_total:
+    min: 200
+    target: 300
+    max: 500
+  ingredient_entries:
+    min: 300
+    target: 400
+    max: 500
+
+sampling:
+  category_ratio:
+    skincare: 0.40
+    makeup: 0.30
+    cleanser: 0.15
+    sunscreen: 0.15
+  price_band_ratio:
+    low: 0.30
+    mid: 0.50
+    high: 0.20
+  brand_tier_ratio:
+    top: 0.40
+    mid: 0.35
+    long_tail: 0.25
+  lifecycle_ratio:
+    new: 0.20
+    stable: 0.60
+    decline: 0.20
+  trend_boost:
+    enabled: true
+    ratio_in_final_sample: 0.20
+    trigger:
+      growth_7d_gt: 0.30
+      weekly_rank_top_n: 100
+
+privacy_and_compliance:
+  allow_raw_review_text: false
+  pii_policy: "no direct identifiers"
+  usage_limit: "course-research-only"
+
+deliverables:
+  - sampling_report.md
+  - data_quality_report.md
+  - release_manifest.md
+  - eval_report.md
+
+gates:
+  data_quality:
+    completeness_gte: 0.95
+    duplicate_rate_lte: 0.02
+    timestamp_valid_gte: 0.98
+    trend_freshness_days_lte: 7
+  model_quality:
+    correctness_gte: 1.4
+    completeness_gte: 1.2
+    safety_gte: 1.8
+    high_risk_violation_eq: 0
