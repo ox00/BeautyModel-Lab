@@ -11,5 +11,4 @@
 
 ## 参考仓库
 - URL: https://github.com/TauricResearch/TradingAgents
-- 本地路径: `/Users/liuzhicheng/1data/workspace_ln/Term2/CDS529-AI-practice/TradingAgents`
 - 参考快照（本地）：`f047f26`
