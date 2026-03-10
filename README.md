@@ -12,29 +12,26 @@ The repo is designed for limited, compliant data supply and iterative model impr
 - Keep outputs explainable, safe, and aligned with compliance rules.
 
 ## Repository structure
-- `docs/`: project guidance and operating standards
+- `docs/`: active MVP working docs (minimal set)
+- `docs/archive/`: legacy docs snapshots
+- `feedback-20260306/`: proposal iteration and mentor discussion package
 - `.github/ISSUE_TEMPLATE/`: issue templates for task splitting and collaboration
 
-## Docs quick links
-- Data support package index: `docs/00-README-数据支持包.md`
-- Data supply and grading policy: `docs/01-数据供给与分级策略.md`
-- Data dictionary template: `docs/02-数据字典模板.md`
-- Two-week iteration SOP: `docs/03-两周迭代SOP.md`
-- Evaluation and release gates: `docs/04-评测与发布门槛.md`
-- Data budget example: `docs/05-data_budget.yaml.example`
-- Sampling report template: `docs/06-sampling_report-template.md`
-- Data quality report template: `docs/07-data_quality_report-template.md`
-- Data/ sampling technical design: `docs/08-技术方案-数据维度与采样设计.md`
-- Distillation flywheel technical design: `docs/09-技术方案-蒸馏与多轮对撞飞轮.md`
-- Experiment design and milestones: `docs/10-实验设计与里程碑.md`
-- TradingAgents reference report: `docs/refers-trading/01-参考分析报告-为什么参考与参考什么.md`
-- Trading->Beauty mapping: `docs/refers-trading/02-工程映射表-从Trading到Beauty顾问.md`
+## Active docs (single entry first)
+- Main entry: `docs/README.md`
+- MVP scope: `docs/01-mvp-scope.md`
+- Architecture: `docs/02-system-architecture.md`
+- Data contract: `docs/03-data-contract.md`
+- Component contract: `docs/04-component-contract.md`
+- Evaluation protocol: `docs/05-eval-protocol.md`
+- Roadmap and owners: `docs/06-roadmap-owner.md`
+- Domain FAQ: `docs/07-domain-faq.md`
 
 ## Collaboration workflow
-1. Open an issue using the templates in `.github/ISSUE_TEMPLATE/`.
-2. Align scope, data budget, and acceptance criteria.
-3. Execute in a 2-week iteration and update docs/reports.
-4. Submit PR with evidence (sampling/eval/risk reports).
+1. Open an issue using `.github/ISSUE_TEMPLATE/`.
+2. Align scope, contract, and acceptance criteria.
+3. Execute in weekly cadence and update only active docs.
+4. Submit PR with required evidence (sampling/eval/risk reports).
 
 ## License / usage
 This repository is for course collaboration and research communication.
