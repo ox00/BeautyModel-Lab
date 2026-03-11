@@ -11,6 +11,7 @@ Only the files below are active for current team collaboration.
 5. `05-eval-protocol.md` - baselines, metrics, ablations, release gates
 6. `06-roadmap-owner.md` - milestones, owners, weekly execution board
 7. `07-domain-faq.md` - domain rules for scientific skincare and trend decisions
+8. `08-data-preparation-requirements-v1.md` - MVP data scope, sampling, quotas, delivery checklist
 
 ## Archive
 Legacy and exploratory docs were archived to:
