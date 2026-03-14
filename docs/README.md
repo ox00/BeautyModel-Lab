@@ -13,6 +13,7 @@ Only the files below are active for current team collaboration.
 7. `07-domain-faq.md` - domain rules for scientific skincare and trend decisions
 8. `08-data-preparation-requirements-v1.md` - MVP data scope, sampling, quotas, delivery checklist
 9. `09-data-intake-checklist.md` - batch intake steps, acceptance gates, mapping rules
+10. `10-engineering-workplan.md` - engineering split, module boundaries, two-week MVP plan
 
 ## Archive
 Legacy and exploratory docs were archived to:
