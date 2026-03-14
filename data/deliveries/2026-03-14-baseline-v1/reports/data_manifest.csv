@@ -5,3 +5,4 @@ trend_signal,P0,300,p0/trend_signal.csv
 ingredient_knowledge,P0,8985,p0/ingredient_knowledge.csv
 review_feedback_raw,P1,29698,p1/review_feedback_raw.csv
 compliance_source_manifest,REF,16,refs/compliance_source_manifest.csv
+compliance_rule,P0,22231,p0/compliance_rule.csv

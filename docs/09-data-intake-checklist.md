@@ -10,7 +10,7 @@ This checklist defines how the team should receive, verify, clean, and hand off 
 - Delivery package: `data/deliveries/2026-03-14-baseline-v1/`
 
 ## 3. Intake Scope
-- `P0`: `product_sku`, `review_feedback`, `trend_signal`, `ingredient_knowledge`
+- `P0`: `product_sku`, `review_feedback`, `trend_signal`, `ingredient_knowledge`, `compliance_rule`
 - `P1`: `review_feedback_raw`
 - `REF`: `compliance_source_manifest`
 
@@ -43,10 +43,10 @@ This checklist defines how the team should receive, verify, clean, and hand off 
 - `review_feedback.rating_bucket` is missing in the source batch
 - `trend_signal` uses monthly growth instead of short-window growth
 - `ingredient_knowledge.inci_name` still has a small number of missing values
-- Compliance docs are only indexed as references in this batch, not yet clause-level structured rules
+- `compliance_rule` is now available as a first-pass structured table, but obligation taxonomy and clause normalization are not complete yet
 
 ## 8. Suggested Next Batch Upgrades
-- Add structured `compliance_rule.csv` from the regulatory xlsx/doc/pdf sources
+- Normalize `compliance_rule` into obligation tags, scope taxonomy, and stronger article-level lineage
 - Add `profile_bucket` once weak-profile rules are frozen
 - Add holdout split generation for `P2` evaluation package
 - Standardize trend windows to `7d` and `30d` together

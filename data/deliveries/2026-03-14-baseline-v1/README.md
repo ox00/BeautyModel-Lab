@@ -5,6 +5,7 @@ This folder contains the cleaned delivery package for the baseline batch importe
 ## Structure
 - `p0/`: safe structured package for training and team sharing
 - `p1/`: restricted package containing raw review text
+- `p0/compliance_rule.csv`: first-pass structured compliance rules
 - `refs/`: source manifests and reference-only materials
 - `reports/`: quality report and batch manifest
 
