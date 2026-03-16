@@ -16,6 +16,7 @@
 2. `02-engineering-b-qa-orchestration.md`
 3. `03-testing-experiment-design.md`
 4. `04-report-and-review-delivery.md`
+5. `05-architecture-domain-data-owner.md`
 
 ## Suggested Flow
 1. Open or refine the task package.

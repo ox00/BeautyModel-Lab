@@ -14,7 +14,8 @@ The repo is designed for limited, compliant data supply and iterative model impr
 ## Repository structure
 - `docs/`: active MVP working docs (minimal set)
 - `docs/archive/`: legacy docs snapshots
-- `feedback-20260306/`: proposal iteration and mentor discussion package
+- `docs/feedback/20260306/`: proposal iteration and mentor discussion package
+- `docs/progress/`: dated team progress notes
 - `.github/ISSUE_TEMPLATE/`: issue templates for task splitting and collaboration
 
 ## Active docs (single entry first)
