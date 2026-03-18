@@ -17,6 +17,7 @@ Only the files below are active for current team collaboration.
 11. `check-issue/README.md` - task-package index for engineering, testing, and reporting collaboration
 12. `progress/` - dated progress notes for shared team execution updates
 13. `feedback/20260306/` - proposal iteration and mentor discussion archive moved under docs
+14. `11-data-source-collection-strategy.md` - upstream data-source, collection, and batch-update strategy
 
 ## Archive
 Legacy and exploratory docs were archived to:
