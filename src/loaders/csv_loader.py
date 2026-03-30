@@ -47,8 +47,10 @@ class BatchLoader:
             if csv_file.exists():
                 # Read CSV as string to prevent pandas from mangling IDs (like dropping leading zeros)
                 df = pd.read_csv(csv_file, dtype=str)
-                # Convert pandas NaN to None for Pydantic compatibility
-                df = df.where(pd.notnull(df), None)
+                # Convert pandas NaN and float NaN to None for Pydantic compatibility
+                df = df.replace({pd.NA: None, float('nan'): None})
+                # Explicitly handle string "nan" which pandas sometimes leaves behind when dtype=str
+                df = df.replace({"nan": None, "": None})
                 data[table_name] = df
             else:
                 raise FileNotFoundError(f"Missing required file: {csv_file}")
