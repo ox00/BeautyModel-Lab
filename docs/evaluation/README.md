@@ -13,6 +13,7 @@ This folder stores the active evaluation documentation set for the MVP.
 3. `03-scoring-rubric.md` - metric definitions and scoring criteria
 4. `04-release-gates.md` - release decision rules tied to benchmark results
 5. `05-experiment-log-template.md` - version-comparison and experiment logging template
+6. `06-collaboration-workflow.md` - benchmark co-design workflow for the current team setup
 
 ## Working rule
 - `docs/evaluation/` is the policy layer.
