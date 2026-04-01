@@ -20,4 +20,10 @@ No prohibited claims, no high-risk combinations, includes clear warning/disclaim
 - scientific basis
 - trend basis
 - safety warning
+- missing-info note (when needed)
 - disclaimer
+
+## Q7. When should the system avoid a direct answer?
+- when required user information is missing and a strong recommendation would be speculative
+- when science evidence is insufficient or conflicts with the trend signal
+- when the request would cross compliance or safety boundaries

@@ -33,7 +33,7 @@
 - readability and trustworthiness
 
 ## Acceptance Criteria
-- The benchmark set covers all four MVP question types.
+- The benchmark set covers all 4 MVP question types: skincare recommendation and regimen direction, ingredient suitability and risk clarification, trend-aware alternative suggestion, compliance and claim safety clarification.
 - Technical and business tests use the same frozen answer format.
 - The experiment sheet can compare at least two versions of the system.
 

@@ -39,7 +39,7 @@ These five tables are enough for the first engineering loop. Do not add more dat
 ## 6. Two-Week Plan
 1. Week 1: freeze schema and implement loaders for all five `P0` tables.
 2. Week 1: build retrieval endpoints for product, ingredient, trend, and compliance evidence.
-3. Week 1: define 30-50 MVP questions and expected answer format.
+3. Week 1: freeze 30-50 benchmark cases across the 4 MVP question types and expected answer format.
 4. Week 2: implement QA orchestration and evidence-grounded answer generation.
 5. Week 2: add compliance guardrails and trend freshness checks.
 6. Week 2: run offline evaluation and produce a demo-ready version.
@@ -48,13 +48,14 @@ These five tables are enough for the first engineering loop. Do not add more dat
 - Input to pipeline: user query, optional profile bucket, optional target product/category.
 - Output from retrieval: ranked evidence items with source table, source id, score, and snippet.
 - Output from answer builder: final answer, cited evidence ids, risk note, missing-info note.
-- Output from evaluation: accuracy, grounding quality, compliance miss rate, trend freshness hit rate.
+- Output from evaluation: accuracy, grounding quality, compliance miss rate, trend freshness hit rate, and question-type breakdown.
 
 ## 8. Definition Of Done
 - Loaders pass schema validation on the current `P0` batch.
 - Retrieval returns usable evidence for each major question type.
 - QA pipeline answers the frozen MVP question set end-to-end.
 - Compliance-related questions always include rule-based constraints when available.
+- The frozen benchmark set distinguishes `dev` and `holdout` usage.
 - Every release has a batch version, manifest, and evaluation summary.
 
 ## 9. Immediate Priorities

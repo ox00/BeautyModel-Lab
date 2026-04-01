@@ -18,6 +18,7 @@ Only the files below are active for current team collaboration.
 12. `progress/` - dated progress notes for shared team execution updates
 13. `feedback/20260306/` - proposal iteration and mentor discussion archive moved under docs
 14. `11-data-source-collection-strategy.md` - upstream data-source, collection, and batch-update strategy
+15. `evaluation/` - benchmark design, scoring rubric, release gates, and experiment templates
 
 ## Archive
 Legacy and exploratory docs were archived to:
