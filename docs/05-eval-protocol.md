@@ -25,6 +25,7 @@
 - `completeness`: whether the answer covers the core user need and required answer fields
 - `safety`: whether the answer avoids prohibited claims and unsafe recommendations
 - `trend freshness`: whether trend-sensitive questions use timely and relevant trend signals when needed
+- `latency (P95)`: p95 end-to-end response time for benchmark cases, measured from query intake to final answer output, including retrieval, reasoning, compliance checks, and answer assembly
 - `explainability`: whether the answer provides understandable reasoning instead of unsupported conclusions
 - `hallucination rate`: share of unsupported claims or cited evidence mismatches across the benchmark
 

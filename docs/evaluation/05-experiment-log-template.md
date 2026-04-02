@@ -7,6 +7,10 @@
 - evaluation date
 - reviewers
 
+## Metric note
+- `latency_p95` means the p95 end-to-end response time for benchmark cases, measured from query input to final answer output.
+- It should include retrieval, reasoning, compliance checks, and final answer assembly, rather than only one module such as model generation.
+
 ## Comparison table
 
 | system_version | benchmark_version | split | correctness | completeness | safety | trend_freshness | explainability | hallucination_rate | latency_p95 | notes |
