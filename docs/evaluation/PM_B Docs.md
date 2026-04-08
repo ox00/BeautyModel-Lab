@@ -1,4 +1,5 @@
-
+### Strategy Intriduction
+In order to make this product significantly more accurate and more professional than competitors (general models), aligning with present e-commerce platforms's regulations on beauty industry, we construct "must" and "must_not" list to control the quality of output, highly focus on 32 quetions submited by PM A.
 ### I. Must-Include Requirements
 
 #### 1. Scientific Rigor Requirements
