@@ -1,0 +1,166 @@
+### Strategy Intriduction
+In order to make this product significantly more accurate and more professional than competitors (general models), aligning with present e-commerce platforms's regulations on beauty industry, we construct "must" and "must_not" list to control the quality of output, highly focus on 32 quetions submited by PM A.
+### I. Must-Include Requirements
+
+#### 1. Scientific Rigor Requirements
+
+| Category | Requirement | Compliant Example | Non-Compliant Example |
+|----------|-------------|-------------------|----------------------|
+| Evidence Level | Explicitly state the strength of scientific evidence | "This ingredient is supported by X clinical studies" | "Scientifically proven effective" |
+| Mechanism of Action | Explain why an ingredient works | "Retinol activates collagen synthesis..." | "It works well" |
+| Risk Grading | Apply risk-level-appropriate warnings | Low risk: standard notice; High risk: explicit warning | Omitting risk disclosure |
+
+#### 2. Personalization Requirements
+
+| Category | Requirement | Compliant Example | Non-Compliant Example |
+|----------|-------------|-------------------|----------------------|
+| Skin Type Adaptation | Provide differentiated recommendations based on user's skin type | "For oily skin, an oil-free formulation is recommended" | "Suitable for all skin types" |
+| Special Population Labeling | Explicitly flag contraindications for pregnant/sensitive individuals | "Retinol is contraindicated during pregnancy" | "Safe for pregnant users" (without certification) |
+| Contextual Adaptation | Consider seasonal, regional, and frequency factors | "A lightweight formula is recommended for summer" | One-size-fits-all recommendations |
+
+#### 3. Trend Responsiveness Requirements
+
+| Category | Requirement | Compliant Example | Non-Compliant Example |
+|----------|-------------|-------------------|----------------------|
+| Trend Context | Provide background on trend popularity | "This ingredient has recently gained high visibility on Xiaohongshu" | "Everyone is using it" |
+| Science vs. Trend Comparison | Compare trend popularity with scientific evidence | "Although popular, current scientific evidence remains insufficient" | Blindly endorsing trends |
+| Balanced Judgment | Provide balanced, non-absolute recommendations | "May be tried with caution" | "Absolutely effective" |
+
+---
+
+### II. Must-Not-Include Prohibitions
+
+#### 1. Absolute and Superlative Terms
+
+| Prohibited Category | Examples | Penalty Risk |
+|---------------------|----------|--------------|
+| Superlatives | "best," "first," "lowest price," "national-level," "ultimate," "peak" | Content removal / traffic restriction |
+| Uniqueness Claims | "only," "exclusive," "pioneering," "first-ever" | Requires supporting certification |
+| Absolute Certainty | "absolutely," "100%," "permanent," "zero risk" | Severe violation |
+
+**Compliant Alternatives:**
+- ❌ "best" → ✅ "highly regarded"
+- ❌ "lowest price on the internet" → ✅ "competitive pricing"
+- ❌ "peak performance" → ✅ "excellent user experience"
+
+#### 2. Medical Efficacy Claims
+
+| Prohibited Category | Examples | Compliant Alternative |
+|---------------------|----------|----------------------|
+| Disease Treatment | "treat," "anti-inflammatory," "antibacterial," "sterilize," "cure" | "soothe," "repair" |
+| Skin Condition Claims | "remove acne scars," "eliminate wrinkles," "repair broken capillaries" | "reduce appearance of acne marks," "soften fine lines" |
+| Medical Terminology | "chemical peel," "promote cell regeneration," "repair damaged cells" | Avoid referencing |
+| Special Efficacy Claims | "hair growth," "breast enhancement," "firming" (requires special certification) | Only permitted for certified special-use cosmetics |
+
+**Note:** Under the Cosmetic Supervision and Administration Regulations, cosmetic advertising must not explicitly or implicitly claim medical effects.
+
+#### 3. Exaggerated or False Claims
+
+| Prohibited Category | Examples | Compliant Alternative |
+|---------------------|----------|----------------------|
+| Efficacy Promises | "whitening in 7 days," "rejuvenation in 28 days," "visible results in 3 days" | "Continued use may improve appearance" |
+| Time Guarantees | "rapid results," "immediate whitening," "instant brightness" | Avoid specific time commitments |
+| Universal Suitability | "suitable for all skin types," "one-size-fits-all" | "Suitable for multiple skin types" |
+| Absolute Efficacy | "remove wrinkles," "completely eliminate acne" | "reduce the appearance of," "improve" |
+| Anti-Aging Claims | "anti-aging," "slow aging" | "improve skin firmness," "enhance elasticity" |
+
+#### 4. Evasive Variants and Bypass Expressions
+
+| Prohibited Category | Examples | Explanation |
+|---------------------|----------|-------------|
+| Pinyin Substitutions | "mi bai" (whitening), "k chu lao" (anti-aging) | AI systems can now detect these |
+| Homophone Substitutions | "vx" (WeChat), "dou" (acne) | Still triggers violations |
+| Emoji Substitutions | "🛒" (shopping cart), "💰" (money) | Use correct terminology instead |
+| Character Splitting | "V.X," "wei an na" | Now included in detection systems |
+
+#### 5. Pricing Misrepresentation
+
+| Prohibited Category | Examples | Compliant Alternative |
+|---------------------|----------|----------------------|
+| Original Price Claims | "Original price $X, now $Y" | "Market reference price" |
+| False Promotions | "last day," "clearance sale," "going out of business" | "Limited-time offer" |
+| False Urgency | "regret missing this," "don't miss out" | Avoid creating anxiety |
+
+#### 6. Sensitive Population Claims
+
+| Prohibited Category | Examples | Explanation |
+|---------------------|----------|-------------|
+| Pregnancy Claims | "Safe for pregnant users" (unless certified as infant/child cosmetic) | Requires special certification |
+| Infant/Child Claims | "Safe for infants," "safe for babies" | Requires special certification |
+| Anxiety Creation | "Get ahead of the curve," "it's too late if you don't start now" | Avoid exploiting insecurities |
+
+---
+
+### III. Category-Specific Rules
+
+#### Category 1: Skincare Recommendations & Routines
+
+| Rule Type | Content |
+|-----------|---------|
+| **Must-Include** | • "Recommendations should be adjusted based on individual skin type"<br>• "Results may vary by individual"<br>• For sensitive skin: "A patch test is recommended before use" |
+| **Must-Not-Include** | • "Suitable for all skin types"<br>• "Results in X days"<br>• "One-size-fits-all" |
+
+#### Category 2: Ingredient Compatibility & Risk Assessment
+
+| Rule Type | Content |
+|-----------|---------|
+| **Must-Include** | • State evidence strength: "Supported by clinical studies" or "Insufficient evidence available"<br>• Include explicit warnings for high-risk ingredients |
+| **Must-Not-Include** | • "Absolutely safe"<br>• "No side effects"<br>• Recommending without risk disclosure |
+
+#### Category 3: Trend-Related Alternative Recommendations
+
+| Rule Type | Content |
+|-----------|---------|
+| **Must-Include** | • Provide trend context: "This ingredient has recently gained high visibility on social media"<br>• Compare scientific evidence with trend popularity |
+| **Must-Not-Include** | • Blindly endorsing popular trends<br>• "Everyone is using it, so it must work"<br>• "Miss out and regret it" |
+
+#### Category 4: Compliance & Claim Safety Assessment
+
+| Rule Type | Content |
+|-----------|---------|
+| **Must-Include** | • Provide compliance verification channels (e.g., "Verify through the National Medical Products Administration website")<br>• State that efficacy claims require evidentiary support |
+| **Must-Not-Include** | • Endorsing exaggerated claims without verification<br>• Promise-based claims such as "whitening in 7 days" |
+
+---
+
+### IV. Risk-Level-Specific Requirements
+
+| Risk Level | Must-Include | Must-Not-Include |
+|------------|--------------|------------------|
+| **Low** | Standard recommendations + "Results may vary" | Absolute or superlative terms |
+| **Medium** | Risk disclosure + "Consult a professional" + Usage precautions | "Absolutely safe" or "No side effects" |
+| **High** | Explicit warning + "Not recommended" + Mandatory referral to medical/professional consultation | Any form of recommendation or encouragement |
+
+---
+
+### V. Compliant Alternative Phrasing Quick Reference
+
+| Non-Compliant Phrasing | Compliant Alternative |
+|------------------------|----------------------|
+| "Most effective" | "Highly regarded" |
+| "Lowest price on the internet" | "Competitive pricing" |
+| "100% effective" | "Most users report positive feedback" |
+| "Whitening in 7 days" | "Continued use may help brighten skin tone" |
+| "Remove acne scars" | "Help reduce the appearance of acne marks" |
+| "Anti-inflammatory" | "Soothing" |
+| "Suitable for all skin types" | "Suitable for multiple skin types" |
+| "Safe for pregnant users" (uncertified) | "Consult a physician during pregnancy" |
+| "Anti-aging" | "Improve skin firmness" |
+| "Permanent wrinkle removal" | "Help improve the appearance of fine lines" |
+
+---
+
+### VI. Comparison with General-Purpose LLMs
+
+| Dimension | General-Purpose LLMs | Your Domain-Specific Product |
+|-----------|---------------------|------------------------------|
+| Superlative Terms | May use "best" | Strictly avoided; use "highly regarded" |
+| Medical Efficacy | May mention "anti-inflammatory" | Use compliant terms like "soothing" |
+| Efficacy Promises | May claim "rapid results" | State "continued use may help improve" |
+| Pregnancy Claims | May state "safe for pregnant users" | State "consult a physician" |
+| Universal Suitability | May claim "suitable for all skin types" | State "suitable for multiple skin types" |
+| Trend Handling | May blindly endorse trends | Compare evidence with popularity; provide balanced judgment |
+
+---
+
+如需调整格式、补充参考文献或细化某一部分，请告知。
