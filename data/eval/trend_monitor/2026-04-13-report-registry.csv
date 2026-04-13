@@ -1,0 +1,8 @@
+report_id,report_title,report_file,report_publish_date,signal_period_type,signal_period_label,source_platform,report_topic,extractability,extraction_method,notes
+RPT_20260413_01,2026全球化妆品原料创新趋势研究报告,"docs/progress/2026-04-13/美业颜究院：2026全球化妆品原料创新趋势研究报告-20260310.pdf",2026-03-10,annual,2026 annual,industry_research,ingredient_innovation,high,text_plus_manual,"可读性较高，目录与分章节主题清晰，可直接提一级和二级关键词"
+RPT_20260413_02,2026年1月抖音美妆个护赛道月报,"docs/progress/2026-04-13/美业颜究院：2026年1月抖音美妆个护赛道月报-20260205.pdf",2026-02-05,monthly,2026-01,douyin,platform_monthly_overview,low,title_only,"正文抽取质量差，当前只建议保留标题级和平台级关键词"
+RPT_20260413_03,2026年2月抖音美妆个护赛道月报,"docs/progress/2026-04-13/美业颜究院：2026年2月抖音美妆个护赛道月报-20260306.pdf",2026-03-06,monthly,2026-02,douyin,platform_monthly_overview,medium,text_plus_manual,"可抽取平台、品类、类目层词，但细粒度热词仍需人工二次确认"
+RPT_20260413_04,2026年3月抖音美妆个护赛道月报,"docs/progress/2026-04-13/美业颜究院：2026年3月抖音美妆个护赛道月报-20260407.pdf",2026-04-07,monthly,2026-03,douyin,platform_monthly_overview,low,title_only,"正文抽取质量差，当前只建议保留标题级和平台级关键词"
+RPT_20260413_05,2026面部清洁市场洞察及趋势风向,"docs/progress/2026-04-13/美业颜究院：2026面部清洁市场洞察及趋势风向-20260402.pdf",2026-04-02,special_topic,2026-04 special,industry_research,face_cleansing,low,title_plus_topic_manual,"标题可用，但正文乱码明显，适合先用专题级关键词，不建议提细词"
+RPT_20260413_06,变局与新生 2025美妆个护市场消费趋势及战略风向,"docs/progress/2026-04-13/美业颜究院：变局与新生 2025美妆个护市场消费趋势及战略风向-20260126.pdf",2026-01-26,annual,2025 annual,industry_research,market_consumer_strategy,medium,title_plus_partial_text,"目录页可用，正文可读性一般，适合提年度主题词和品类词"
+RPT_20260413_07,美妆个护成分年度盘点及2026趋势洞察,"docs/progress/2026-04-13/美业颜究院：美妆个护成分年度盘点及2026趋势洞察-20260123.pdf",2026-01-23,annual,2026 annual,industry_research,ingredient_yearly_review,medium,title_plus_partial_text,"适合提年度成分主题词，但不建议依赖正文抽取细节"
