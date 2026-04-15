@@ -1,0 +1,5 @@
+signal_id,keyword_id,crawl_task_id,normalized_keyword,topic_cluster,trend_type,signal_summary,signal_evidence,source_platform,source_url,trend_score,confidence,risk_flag,observed_at,fresh_until
+TS_20260415_0001,KW_0002,184,外泌体,ingredient_frontier,ingredient,外泌体在护肤讨论中出现频率提升,多条内容将外泌体与修护和抗衰场景绑定,xiaohongshu,https://example.com/trend/exosome,82.4,high,medium,2026-04-15T10:30:00+08:00,2026-04-22T10:30:00+08:00
+TS_20260415_0002,KW_0003,185,猛药焕肤,risk_hype,risk_compliance,高刺激快速焕肤讨论升温,高浓度活性叠加在短期见效内容中高频出现,douyin,https://example.com/trend/aggressive-peel,67.0,medium,high,2026-04-15T11:00:00+08:00,2026-04-22T11:00:00+08:00
+TS_20260415_0003,KW_0004,186,胶原蛋白,ingredient_hype,ingredient,胶原蛋白讨论升温但证据噪声较高,相关内容存在但支持记录稀疏,xiaohongshu,https://example.com/trend/collagen,78.0,low,medium,2026-04-15T09:00:00+08:00,2026-04-22T09:00:00+08:00
+TS_20260301_0001,KW_0005,187,冰晶眼膜,concept,category,冰晶眼膜在历史窗口热度提升,历史数据曾出现高增速,taobao,https://example.com/trend/ice-eye-mask,72.0,high,medium,2026-03-01T00:00:00+08:00,2026-03-08T00:00:00+08:00
