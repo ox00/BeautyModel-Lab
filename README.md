@@ -33,6 +33,9 @@ The repo is designed for limited, compliant data supply and iterative model impr
 - Domain FAQ: `docs/07-domain-faq.md`
 - Repo structure normalization: `docs/12-repo-structure-normalization.md`
 - TrendAgent dataflow and dependency boundary: `docs/13-trendagent-dataflow-and-dependency-boundary.md`
+- TrendAgent to QA data contract: `docs/14-trendagent-to-qa-data-contract.md`
+- Trend signal schema: `docs/15-trend-signal-schema.md`
+- Architecture-controlled task packages: `docs/check-issue/README.md`
 
 ## Collaboration workflow
 1. Open an issue using `.github/ISSUE_TEMPLATE/`.

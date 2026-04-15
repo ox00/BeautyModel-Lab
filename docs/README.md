@@ -14,13 +14,15 @@ Only the files below are active for current team collaboration.
 8. `08-data-preparation-requirements-v1.md` - MVP data scope, sampling, quotas, delivery checklist
 9. `09-data-intake-checklist.md` - batch intake steps, acceptance gates, mapping rules
 10. `10-engineering-workplan.md` - engineering split, module boundaries, two-week MVP plan
-11. `check-issue/README.md` - task-package index for engineering, testing, and reporting collaboration
+11. `check-issue/README.md` - architecture-controlled task-package workflow and execution board
 12. `progress/` - dated progress notes for shared team execution updates
 13. `feedback/20260306/` - proposal iteration and mentor discussion archive moved under docs
 14. `11-data-source-collection-strategy.md` - upstream data-source, collection, and batch-update strategy
 15. `evaluation/` - benchmark design, scoring rubric, release gates, and experiment templates
 16. `12-repo-structure-normalization.md` - target monorepo structure, module boundary, and migration order
 17. `13-trendagent-dataflow-and-dependency-boundary.md` - TrendAgent dataflow, vendor dependency boundary, and modification guidance
+18. `14-trendagent-to-qa-data-contract.md` - TrendAgent to QA first-party data contract
+19. `15-trend-signal-schema.md` - first-party trend_signal schema for downstream QA use
 
 ## Archive
 Legacy and exploratory docs were archived to:

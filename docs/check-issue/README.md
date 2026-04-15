@@ -1,26 +1,48 @@
 # Check-Issue Task Packages
 
 ## Purpose
-- This folder is the shared execution board for the current MVP phase.
-- Each task package should be specific enough to support issue creation, branch work, review, and handoff.
-- Team members can refine the package in their own branches, but should keep the package goal and acceptance criteria stable.
 
-## Working Rules
-- One task package maps to one issue thread and one major delivery goal.
-- Implementation PRs should reference the related task package.
-- Scope changes should update the package first, then update the implementation plan.
-- Shared language should stay collaborative and team-oriented.
+This folder is the shared execution board for architecture-controlled delivery.
 
-## Current Packages
-1. `01-engineering-a-data-retrieval.md`
-2. `02-engineering-b-qa-orchestration.md`
-3. `03-testing-experiment-design.md`
-4. `04-report-and-review-delivery.md`
-5. `05-architecture-domain-data-owner.md`
+The architecture-control thread owns:
+- design framing
+- contract freeze
+- schema freeze
+- task package definition
+- backtest rule
+- merge decision
 
-## Suggested Flow
-1. Open or refine the task package.
-2. Create the linked GitHub issue.
-3. Create the working branch.
-4. Implement and validate against the package acceptance criteria.
-5. Update status and risks before merge.
+Implementation runs in separate execution threads so design context and debugging context stay separated.
+
+## Structure
+
+- `_templates/` - reusable package templates
+- `00-governance/` - workflow and backtest rules
+- `20-trendagent/` - task packages for `BeautyQA-TrendAgent/`
+- `30-qacore/` - task packages for `BeautyQA-core/`
+- root-level older flat packages remain as legacy MVP packages and should not receive new work by default
+
+## Required Flow
+
+1. Freeze or update the relevant design doc.
+2. Freeze or update the contract / schema doc.
+3. Create or revise the task package.
+4. Open a dedicated execution thread.
+5. Execute implementation and backtest there.
+6. Return evidence to architecture control.
+7. Approve merge or request rework.
+
+## Current Core Docs
+
+- `docs/14-trendagent-to-qa-data-contract.md`
+- `docs/15-trend-signal-schema.md`
+- `00-governance/architecture-control-workflow.md`
+- `00-governance/trendagent-backtest-standard.md`
+- `_templates/task-package-template.md`
+
+## Current Ready Packages
+
+- `20-trendagent/TA-001-trendagent-to-qa-contract-adoption.md`
+- `20-trendagent/TA-002-trend-signal-generation-layer.md`
+- `20-trendagent/TA-003-keyword-expansion-alignment.md`
+- `30-qacore/QA-001-trend-signal-retrieval-integration.md`
