@@ -19,6 +19,8 @@ Only the files below are active for current team collaboration.
 13. `feedback/20260306/` - proposal iteration and mentor discussion archive moved under docs
 14. `11-data-source-collection-strategy.md` - upstream data-source, collection, and batch-update strategy
 15. `evaluation/` - benchmark design, scoring rubric, release gates, and experiment templates
+16. `12-repo-structure-normalization.md` - target monorepo structure, module boundary, and migration order
+17. `13-trendagent-dataflow-and-dependency-boundary.md` - TrendAgent dataflow, vendor dependency boundary, and modification guidance
 
 ## Archive
 Legacy and exploratory docs were archived to:

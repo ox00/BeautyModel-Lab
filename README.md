@@ -12,6 +12,10 @@ The repo is designed for limited, compliant data supply and iterative model impr
 - Keep outputs explainable, safe, and aligned with compliance rules.
 
 ## Repository structure
+- `BeautyQA-core/`: QA / RAG core module
+- `BeautyQA-TrendAgent/`: trend monitoring and crawling module
+- `BeautyQA-vendor/`: external codebases such as MediaCrawler
+- `docs/12-repo-structure-normalization.md`: target monorepo structure and migration order
 - `docs/`: active MVP working docs (minimal set)
 - `docs/archive/`: legacy docs snapshots
 - `docs/feedback/20260306/`: proposal iteration and mentor discussion package
@@ -27,6 +31,8 @@ The repo is designed for limited, compliant data supply and iterative model impr
 - Evaluation protocol: `docs/05-eval-protocol.md`
 - Roadmap and owners: `docs/06-roadmap-owner.md`
 - Domain FAQ: `docs/07-domain-faq.md`
+- Repo structure normalization: `docs/12-repo-structure-normalization.md`
+- TrendAgent dataflow and dependency boundary: `docs/13-trendagent-dataflow-and-dependency-boundary.md`
 
 ## Collaboration workflow
 1. Open an issue using `.github/ISSUE_TEMPLATE/`.
