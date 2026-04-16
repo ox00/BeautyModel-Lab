@@ -33,6 +33,12 @@
 负责 QA-003：只在 BeautyQA-core 内按 docs/14、docs/15 和 docs/check-issue/30-qacore/QA-003-trend-evidence-boundary-tightening.md 把 QA 侧实现收紧回 trend_signal ingestion + retrieval/evidence assembly 边界，保留 first-party contract 读取、freshness/confidence/risk metadata 透传与 graceful fallback，但不要在这个子任务里固化最终 safety/compliance answer policy；若 QA-002 已把回答治理写进 runtime，请降级为 metadata/flag 输出或可插拔 hook，交付 changed files、implementation summary、回归说明、backtest result、open risks。
 ```
 
+## QA-004
+
+```text
+负责 QA-004：只在 BeautyQA-core 内按 docs/16-trend-signal-to-qa-usage-guide.md 和 docs/check-issue/30-qacore/QA-004-trend-evidence-layer-integration.md 落 trend evidence layer，范围只包含 first-party trend_signal ingestion、evidence item parsing、retrieval/filter hooks、trend context block 输出与 trace/debug 字段保留，不处理主 QA 系统的最终回答治理，交付 changed files、implementation summary、sample trend context output、backtest result、open risks。
+```
+
 ## INT-001
 
 ```text

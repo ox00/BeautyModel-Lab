@@ -10,3 +10,5 @@ Current sequence:
 - `QA-002-kickoff_cn.md`
 - `QA-003-trend-evidence-boundary-tightening.md`
 - `QA-003-kickoff_cn.md`
+- `QA-004-trend-evidence-layer-integration.md`
+- `QA-004-kickoff_cn.md`

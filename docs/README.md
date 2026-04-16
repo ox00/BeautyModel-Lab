@@ -23,6 +23,7 @@ Only the files below are active for current team collaboration.
 17. `13-trendagent-dataflow-and-dependency-boundary.md` - TrendAgent dataflow, vendor dependency boundary, and modification guidance
 18. `14-trendagent-to-qa-data-contract.md` - TrendAgent to QA first-party data contract
 19. `15-trend-signal-schema.md` - first-party trend_signal schema for downstream QA use
+20. `16-trend-signal-to-qa-usage-guide.md` - how QA / RAG should parse, index, filter, and use trend_signal
 
 ## Archive
 Legacy and exploratory docs were archived to:
