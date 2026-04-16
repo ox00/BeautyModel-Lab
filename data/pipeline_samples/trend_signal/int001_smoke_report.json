@@ -1,0 +1,80 @@
+{
+  "task_id": "INT-001",
+  "stage_summary": {
+    "cleaned_input_count": 6,
+    "generated_signal_count": 4,
+    "qa_cases": 3,
+    "shared_csv_path": "data/pipeline_samples/trend_signal/trend_signal_first_party_sample.csv",
+    "shared_json_path": "data/pipeline_samples/trend_signal/trend_signal_first_party_sample.json"
+  },
+  "cases": [
+    {
+      "case": "trend_evidence_present",
+      "query": "最近外泌体很火，值得跟吗",
+      "behavior_flag": "trend_supported",
+      "selected_evidence": {
+        "signal_id": "TS_20260415_184_1001",
+        "normalized_keyword": "外泌体",
+        "source_platform": "xiaohongshu",
+        "support_count": 2
+      },
+      "top_metadata": {
+        "top_signal_id": "TS_20260415_184_1001",
+        "top_normalized_keyword": "外泌体",
+        "top_source_platform": "xiaohongshu",
+        "top_source_url": "https://example.com/trend/exosome-1",
+        "top_fresh_until": "2026-04-22T11:15:00",
+        "top_confidence": "medium",
+        "top_risk_flag": "medium",
+        "top_rejection_reason": null,
+        "has_trend_evidence": true,
+        "has_strong_trend_evidence": true,
+        "has_high_risk_signal": false,
+        "graceful_fallback": false
+      },
+      "top_rejection_reason": null
+    },
+    {
+      "case": "trend_evidence_high_risk",
+      "query": "最近猛药焕肤很火，值得跟吗",
+      "behavior_flag": "trend_filtered_for_safety",
+      "selected_evidence": null,
+      "top_metadata": {
+        "top_signal_id": "TS_20260415_185_1003",
+        "top_normalized_keyword": "猛药焕肤",
+        "top_source_platform": "douyin",
+        "top_source_url": "https://example.com/trend/aggressive-peel-1",
+        "top_fresh_until": "2026-04-22T11:10:00",
+        "top_confidence": "medium",
+        "top_risk_flag": "high",
+        "top_rejection_reason": "high_risk_blocked",
+        "has_trend_evidence": true,
+        "has_strong_trend_evidence": false,
+        "has_high_risk_signal": true,
+        "graceful_fallback": true
+      },
+      "top_rejection_reason": "high_risk_blocked"
+    },
+    {
+      "case": "trend_evidence_stale",
+      "query": "最近冰晶眼膜很火，值得跟吗",
+      "behavior_flag": "trend_weak_or_missing",
+      "selected_evidence": null,
+      "top_metadata": {
+        "top_signal_id": "TS_20260301_187_1006",
+        "top_normalized_keyword": "冰晶眼膜",
+        "top_source_platform": "taobao",
+        "top_source_url": "https://example.com/trend/ice-eye-mask",
+        "top_fresh_until": "2026-03-08T00:00:00",
+        "top_confidence": "medium",
+        "top_risk_flag": "low",
+        "top_rejection_reason": "stale",
+        "has_trend_evidence": true,
+        "has_strong_trend_evidence": false,
+        "has_high_risk_signal": false,
+        "graceful_fallback": true
+      },
+      "top_rejection_reason": "stale"
+    }
+  ]
+}

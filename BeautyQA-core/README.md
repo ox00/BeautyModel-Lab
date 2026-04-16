@@ -9,6 +9,9 @@ This module now focuses on first-party `trend_signal` ingestion + retrieval/evid
 - `docs/15-trend-signal-schema.md`
 - `docs/check-issue/30-qacore/QA-003-trend-evidence-boundary-tightening.md`
 
+Implementation path:
+- `src/trend_evidence/` is the trend-evidence handoff layer for downstream QA / RAG
+
 Key boundary guarantees:
 - runtime reads first-party `trend_signal` contract data only
 - retrieval exposes freshness/confidence/risk metadata + evidence quality flags

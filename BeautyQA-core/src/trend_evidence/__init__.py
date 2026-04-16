@@ -1,4 +1,4 @@
-"""QA core package for first-party trend_signal retrieval integration and gating hardening (QA-002)."""
+"""Trend evidence ingestion and retrieval package for first-party trend_signal handoff."""
 
 from .models import TrendSignal, TrendEvidence, QAResult
 from .trend_retrieval import TrendSignalRepository, TrendRetrievalConfig

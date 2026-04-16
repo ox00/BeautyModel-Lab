@@ -85,6 +85,14 @@ python main.py --platform xhs --lt qrcode --type search \
 
 对爬取的原始数据进行 AI 驱动的清洗与结构化处理。
 
+### Step 4: First-party trend_signal 生成
+
+清洗完成后，系统在 `BeautyQA-TrendAgent` 内部生成 first-party `trend_signal` 输出（不暴露 vendor raw table 细节）：
+
+- 输出目录：`backend/data/trend_signal/{platform}/*.json`
+- 输出内容：`docs/15-trend-signal-schema.md` 中的核心字段（`signal_id`、`normalized_keyword`、`trend_score`、`confidence`、`risk_flag`、`fresh_until` 等）
+- API 导出：`GET /api/v1/data/trend-signals/export?normalized_keyword=...&platform=...`
+
 ---
 
 ## 环境配置

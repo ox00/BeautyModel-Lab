@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
+from pathlib import Path
 
-from qa_core.pipeline import QAPipeline
-from qa_core.trend_retrieval import TrendSignalRepository
+from trend_evidence.pipeline import QAPipeline
+from trend_evidence.trend_retrieval import TrendSignalRepository
+
+
+SHARED_SAMPLE = Path(__file__).resolve().parents[2] / "data" / "pipeline_samples" / "trend_signal" / "trend_signal_first_party_sample.csv"
 
 
 def _render_case(case_name: str, query: str, repo: TrendSignalRepository, now: datetime) -> dict[str, object]:
@@ -42,7 +46,7 @@ def _render_case(case_name: str, query: str, repo: TrendSignalRepository, now: d
 def main() -> None:
     now_dt = datetime(2026, 4, 15, 12, 0, 0)
 
-    repo = TrendSignalRepository.from_contract_csv("tests/fixtures/trend_signal_first_party_sample.csv", now=now_dt)
+    repo = TrendSignalRepository.from_contract_csv(SHARED_SAMPLE, now=now_dt)
     migration_repo = TrendSignalRepository.from_legacy_csv_for_migration(
         "../data/deliveries/2026-03-14-baseline-v1/p0/trend_signal.csv",
         now=now_dt,

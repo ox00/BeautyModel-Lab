@@ -20,6 +20,8 @@ Implementation runs in separate execution threads so design context and debuggin
 - `00-governance/` - workflow and backtest rules
 - `20-trendagent/` - task packages for `BeautyQA-TrendAgent/`
 - `30-qacore/` - task packages for `BeautyQA-core/`
+- `40-integration/` - cross-module integration and smoke-test packages
+- `50-evaluation/` - benchmark and quality-gate packages
 - root-level older flat packages remain as legacy MVP packages and should not receive new work by default
 
 ## Required Flow
@@ -37,6 +39,7 @@ Implementation runs in separate execution threads so design context and debuggin
 - `docs/14-trendagent-to-qa-data-contract.md`
 - `docs/15-trend-signal-schema.md`
 - `00-governance/architecture-control-workflow.md`
+- `00-governance/execution-thread-kickoff-guide_cn.md`
 - `00-governance/trendagent-backtest-standard.md`
 - `_templates/task-package-template.md`
 
@@ -46,3 +49,20 @@ Implementation runs in separate execution threads so design context and debuggin
 - `20-trendagent/TA-002-trend-signal-generation-layer.md`
 - `20-trendagent/TA-003-keyword-expansion-alignment.md`
 - `30-qacore/QA-001-trend-signal-retrieval-integration.md`
+- `40-integration/INT-001-e2e-smoke-test.md`
+- `50-evaluation/EVAL-001-benchmark-v1.md`
+
+## Execution Thread Inputs
+
+Use the kickoff docs below when handing work to a separate implementation thread or engineer:
+
+- `00-governance/execution-thread-kickoff-guide_cn.md`
+- `00-governance/execution-thread-short-prompts_cn.md`
+- `20-trendagent/TA-001-kickoff_cn.md`
+- `20-trendagent/TA-002-kickoff_cn.md`
+- `20-trendagent/TA-003-kickoff_cn.md`
+- `30-qacore/QA-001-kickoff_cn.md`
+- `30-qacore/QA-002-kickoff_cn.md`
+- `30-qacore/QA-003-kickoff_cn.md`
+- `40-integration/INT-001-kickoff_cn.md`
+- `50-evaluation/EVAL-001-kickoff_cn.md`

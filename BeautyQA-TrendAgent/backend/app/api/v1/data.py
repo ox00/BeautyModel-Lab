@@ -1,14 +1,28 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 
 from app.api.deps import TrendRepoDep
-from app.domain.models.trend_data import TrendDataRead, TrendDataExport, TrendDataQuery
+from app.config.settings import settings
+from app.domain.models.trend_data import TrendDataRead, TrendDataExport
 
 router = APIRouter(prefix="/data", tags=["data"])
+
+
+def _normalize_platform_filter(platform: str) -> str:
+    mapping = {
+        "xhs": "xiaohongshu",
+        "dy": "douyin",
+        "bili": "bilibili",
+        "wb": "weibo",
+        "ks": "kuaishou",
+    }
+    return mapping.get(platform, platform)
 
 
 @router.get("/cleaned", response_model=list[TrendDataRead])
@@ -66,3 +80,50 @@ async def count_trend_data(
     """Count cleaned trend data entries for a keyword."""
     count = await repo.count_by_keyword(keyword, platform)
     return {"keyword": keyword, "platform": platform or "all", "count": count}
+
+
+@router.get("/trend-signals/export", response_class=JSONResponse)
+async def export_trend_signals(
+    platform: Optional[str] = None,
+    normalized_keyword: Optional[str] = None,
+    limit: int = Query(default=100, ge=1, le=500),
+):
+    """Export first-party trend_signal records for downstream retrieval."""
+    base_dir = Path(settings.DATA_DIR) / "trend_signal"
+    if not base_dir.exists():
+        return {"count": 0, "results": []}
+
+    pattern = "*.json"
+    normalized_platform = _normalize_platform_filter(platform) if platform else None
+
+    if platform:
+        search_dir = base_dir / platform
+        files = sorted(search_dir.glob(pattern), reverse=True) if search_dir.exists() else []
+    else:
+        files = sorted(base_dir.glob("*/*.json"), reverse=True)
+
+    selected: list[dict] = []
+    for fpath in files:
+        try:
+            payload = json.loads(fpath.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        signals = payload.get("trend_signals", [])
+        if not isinstance(signals, list):
+            continue
+
+        for signal in signals:
+            if not isinstance(signal, dict):
+                continue
+            if normalized_keyword and signal.get("normalized_keyword") != normalized_keyword:
+                continue
+            if normalized_platform and signal.get("source_platform") != normalized_platform:
+                continue
+            selected.append(signal)
+            if len(selected) >= limit:
+                break
+        if len(selected) >= limit:
+            break
+
+    return {"count": len(selected), "results": selected}

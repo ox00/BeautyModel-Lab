@@ -6,6 +6,7 @@ import logging
 from app.tasks.celery_app import celery_app
 from app.agents.base import AgentContext
 from app.agents.cleaning_agent import CleaningAgent
+from app.agents.signal_agent import SignalAgent
 
 logger = logging.getLogger(__name__)
 
@@ -55,12 +56,35 @@ async def _process_trend_data_async(crawl_result: dict) -> dict:
         )
 
         result = await cleaning_agent.execute(context)
+        signal_result = {"success": False, "signal_count": 0, "error": "cleaning_not_run"}
+
+        if result.success:
+            signal_agent = SignalAgent()
+            signal_agent_result = await signal_agent.execute(context)
+            signal_result = {
+                "success": signal_agent_result.success,
+                "signal_count": signal_agent_result.data.get("signal_count", 0) if signal_agent_result.success else 0,
+                "output_file": signal_agent_result.data.get("output_file", ""),
+                "error": signal_agent_result.error if not signal_agent_result.success else "",
+            }
+        else:
+            signal_result = {"success": False, "signal_count": 0, "error": "skipped_due_to_cleaning_failure"}
+
+        # TA-001 requires first-party trend_signal output path.
+        # Mark the task as success only when both cleaning and signal generation succeed.
+        overall_success = result.success and signal_result["success"]
+        error_parts = []
+        if not result.success and result.error:
+            error_parts.append(f"cleaning_failed: {result.error}")
+        if result.success and not signal_result["success"] and signal_result["error"]:
+            error_parts.append(f"signal_generation_failed: {signal_result['error']}")
 
         return {
             "task_id": task_id,
-            "success": result.success,
+            "success": overall_success,
             "cleaned_count": result.data.get("cleaned_count", 0) if result.success else 0,
-            "error": result.error if not result.success else "",
+            "error": "; ".join(error_parts),
+            "signal_generation": signal_result,
         }
 
     except Exception as e:

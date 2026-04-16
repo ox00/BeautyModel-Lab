@@ -1,0 +1,143 @@
+[
+  {
+    "id": 1001,
+    "source_id": "note_1001",
+    "source_platform": "xhs",
+    "keyword": "外泌体",
+    "normalized_keyword": "外泌体",
+    "topic_cluster": "ingredient_frontier",
+    "trend_type": "ingredient",
+    "title": "外泌体修护精华讨论升温",
+    "summary": "多条内容将外泌体与修护和抗衰场景绑定。",
+    "topics": "外泌体,修护,抗衰",
+    "trend_score": 82.4,
+    "raw_data": {
+      "note_url": "https://example.com/trend/exosome-1"
+    },
+    "created_at": "2026-04-15T10:30:00+08:00",
+    "crawl_task_id": 184,
+    "keyword_id": "KW_0002",
+    "report_id": "RPT_20260413_01",
+    "signal_period_type": "monthly",
+    "signal_period_label": "2026-04",
+    "source_scope": "social_content"
+  },
+  {
+    "id": 1002,
+    "source_id": "note_1002",
+    "source_platform": "xhs",
+    "keyword": "外泌体",
+    "normalized_keyword": "外泌体",
+    "topic_cluster": "ingredient_frontier",
+    "trend_type": "ingredient",
+    "title": "外泌体与屏障修护共现",
+    "summary": "讨论重点集中在屏障维稳和精华场景。",
+    "topics": "外泌体,屏障,维稳",
+    "trend_score": 76.0,
+    "raw_data": {
+      "note_url": "https://example.com/trend/exosome-2"
+    },
+    "created_at": "2026-04-15T11:15:00+08:00",
+    "crawl_task_id": 184,
+    "keyword_id": "KW_0002",
+    "report_id": "RPT_20260413_01",
+    "signal_period_type": "monthly",
+    "signal_period_label": "2026-04",
+    "source_scope": "social_content"
+  },
+  {
+    "id": 1003,
+    "source_id": "video_2001",
+    "source_platform": "dy",
+    "keyword": "猛药焕肤",
+    "normalized_keyword": "猛药焕肤",
+    "topic_cluster": "risk_hype",
+    "trend_type": "risk_compliance",
+    "title": "高刺激焕肤话题升温",
+    "summary": "高浓度活性叠加在短期见效内容中高频出现。",
+    "topics": "高浓度,焕肤,功效,治疗",
+    "trend_score": 67.0,
+    "raw_data": {
+      "share_url": "https://example.com/trend/aggressive-peel-1"
+    },
+    "created_at": "2026-04-15T11:00:00+08:00",
+    "crawl_task_id": 185,
+    "keyword_id": "KW_0003",
+    "report_id": "RPT_20260413_02",
+    "signal_period_type": "monthly",
+    "signal_period_label": "2026-04",
+    "source_scope": "social_content",
+    "risk_flag": "high"
+  },
+  {
+    "id": 1004,
+    "source_id": "video_2002",
+    "source_platform": "dy",
+    "keyword": "猛药焕肤",
+    "normalized_keyword": "猛药焕肤",
+    "topic_cluster": "risk_hype",
+    "trend_type": "risk_compliance",
+    "title": "快速见效焕肤内容扩散",
+    "summary": "高频出现去角质、刷酸叠加和快速见效表达。",
+    "topics": "刷酸,快速见效,功效,治疗",
+    "trend_score": 61.0,
+    "raw_data": {
+      "share_url": "https://example.com/trend/aggressive-peel-2"
+    },
+    "created_at": "2026-04-15T11:10:00+08:00",
+    "crawl_task_id": 185,
+    "keyword_id": "KW_0003",
+    "report_id": "RPT_20260413_02",
+    "signal_period_type": "monthly",
+    "signal_period_label": "2026-04",
+    "source_scope": "social_content",
+    "risk_flag": "high"
+  },
+  {
+    "id": 1005,
+    "source_id": "note_3001",
+    "source_platform": "xhs",
+    "keyword": "胶原蛋白",
+    "normalized_keyword": "胶原蛋白",
+    "topic_cluster": "ingredient_hype",
+    "trend_type": "ingredient",
+    "title": "胶原蛋白内容热度提升",
+    "summary": "相关内容存在但支持记录稀疏，证据噪声较高。",
+    "topics": "胶原蛋白,口服,噪声",
+    "trend_score": 78.0,
+    "raw_data": {
+      "note_url": "https://example.com/trend/collagen"
+    },
+    "created_at": "2026-04-15T09:00:00+08:00",
+    "crawl_task_id": 186,
+    "keyword_id": "KW_0004",
+    "report_id": "RPT_20260413_03",
+    "signal_period_type": "monthly",
+    "signal_period_label": "2026-04",
+    "source_scope": "social_content",
+    "confidence": "low"
+  },
+  {
+    "id": 1006,
+    "source_id": "item_4001",
+    "source_platform": "taobao",
+    "keyword": "冰晶眼膜",
+    "normalized_keyword": "冰晶眼膜",
+    "topic_cluster": "concept",
+    "trend_type": "category",
+    "title": "冰晶眼膜历史窗口热度提升",
+    "summary": "历史数据曾出现高增速，但当前窗口已过期。",
+    "topics": "冰晶眼膜,冷感",
+    "trend_score": 72.0,
+    "raw_data": {
+      "url": "https://example.com/trend/ice-eye-mask"
+    },
+    "created_at": "2026-03-01T00:00:00+08:00",
+    "crawl_task_id": 187,
+    "keyword_id": "KW_0005",
+    "report_id": "RPT_20260301_01",
+    "signal_period_type": "monthly",
+    "signal_period_label": "2026-03",
+    "source_scope": "reference_source"
+  }
+]

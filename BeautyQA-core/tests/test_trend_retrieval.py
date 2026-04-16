@@ -1,19 +1,18 @@
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
-from qa_core.pipeline import QAPipeline
-from qa_core.trend_retrieval import TrendSignalRepository
+from trend_evidence.pipeline import QAPipeline
+from trend_evidence.trend_retrieval import TrendSignalRepository
 
 
 NOW = datetime(2026, 4, 15, 12, 0, 0)
+SHARED_SAMPLE = Path(__file__).resolve().parents[2] / "data" / "pipeline_samples" / "trend_signal" / "trend_signal_first_party_sample.csv"
 
 
 def _contract_repo() -> TrendSignalRepository:
-    return TrendSignalRepository.from_contract_csv(
-        "tests/fixtures/trend_signal_first_party_sample.csv",
-        now=NOW,
-    )
+    return TrendSignalRepository.from_contract_csv(SHARED_SAMPLE, now=NOW)
 
 
 def test_runtime_contract_loader_rejects_legacy_schema() -> None:

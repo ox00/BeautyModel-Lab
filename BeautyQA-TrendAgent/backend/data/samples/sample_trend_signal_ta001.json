@@ -1,0 +1,27 @@
+{
+  "signal_id": "TS_20260415_9001_101",
+  "keyword_id": "KW_0001",
+  "crawl_task_id": 9001,
+  "normalized_keyword": "发酵赋能",
+  "topic_cluster": "ingredient_technology",
+  "trend_type": "ingredient",
+  "signal_summary": "发酵赋能在小红书护肤内容中持续出现，并与修护、屏障、温和功效高频共现。",
+  "signal_evidence": "示例证据：多条清洗内容将发酵成分与修护敏感肌、日常维稳场景绑定。",
+  "source_platform": "xiaohongshu",
+  "source_url": "about:source/xiaohongshu/note_123456",
+  "trend_score": 186.5,
+  "confidence": "high",
+  "risk_flag": "medium",
+  "observed_at": "2026-04-15T10:30:00+08:00",
+  "fresh_until": "2026-04-22T10:30:00+08:00",
+  "report_id": "RPT_20260413_01",
+  "signal_period_type": "annual",
+  "signal_period_label": "2026 annual",
+  "source_scope": "industry_research",
+  "support_count": 1,
+  "evidence_ids": [
+    "CTD_101"
+  ],
+  "aggregation_method": "record_level_v0",
+  "version": "v0.1"
+}
