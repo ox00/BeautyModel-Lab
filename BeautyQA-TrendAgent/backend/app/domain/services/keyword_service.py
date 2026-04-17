@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import io
 import logging
+from datetime import datetime
 from typing import Optional
 
 from app.domain.models.keyword import KeywordCreate, KeywordUpdate, KeywordRead, KeywordBatchImport, KeywordCsvRow
@@ -136,3 +137,11 @@ class KeywordService:
     async def get_due_keywords(self, platform: Optional[str] = None) -> list[KeywordRead]:
         keywords = await self._repo.list_due_for_crawl(normalize_due_platform(platform))
         return [KeywordRead.model_validate(k) for k in keywords]
+
+    async def mark_crawled(self, keyword_id: int, when: Optional[datetime] = None) -> Optional[KeywordRead]:
+        keyword = await self._repo.get_by_id(keyword_id)
+        if not keyword:
+            return None
+        keyword.last_crawled_at = when or datetime.now()
+        keyword = await self._repo.update(keyword)
+        return KeywordRead.model_validate(keyword)

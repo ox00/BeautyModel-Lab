@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional
 
 from app.domain.models.crawl_task import CrawlTaskCreate, CrawlTaskRead
@@ -56,7 +56,12 @@ class TaskService:
         tasks = await self._repo.list_by_status(status, limit, offset)
         return [CrawlTaskRead.model_validate(t) for t in tasks]
 
-    async def mark_running(self, task_id: int, celery_task_id: str, account_id: int) -> Optional[CrawlTaskRead]:
+    async def mark_running(
+        self,
+        task_id: int,
+        celery_task_id: str,
+        account_id: Optional[int],
+    ) -> Optional[CrawlTaskRead]:
         task = await self._repo.get_by_id(task_id)
         if not task:
             return None
@@ -67,6 +72,46 @@ class TaskService:
         task = await self._repo.update(task)
         await self._repo.add_log(task_id, "info", f"Task started with celery_task_id={celery_task_id}")
         return CrawlTaskRead.model_validate(task)
+
+    async def merge_result_summary(self, task_id: int, patch: dict[str, Any]) -> Optional[CrawlTaskRead]:
+        task = await self._repo.get_by_id(task_id)
+        if not task:
+            return None
+        current = dict(task.result_summary or {})
+        current.update(patch)
+        task.result_summary = current
+        task = await self._repo.update(task)
+        return CrawlTaskRead.model_validate(task)
+
+    async def find_recent_duplicate(
+        self,
+        *,
+        keyword_id: int,
+        dedup_key: str,
+        within_hours: int = 168,
+        retry_cooldown_hours: int = 24,
+    ) -> Optional[CrawlTaskRead]:
+        tasks = await self._repo.list_by_keyword(keyword_id)
+        if not tasks:
+            return None
+
+        cutoff = datetime.now() - timedelta(hours=within_hours)
+        retry_cutoff = datetime.now() - timedelta(hours=retry_cooldown_hours)
+        for task in tasks:
+            task_config = task.config or {}
+            if task_config.get("task_dedup_key") != dedup_key:
+                continue
+            if task.status in {"pending", "running"}:
+                return CrawlTaskRead.model_validate(task)
+            if task.status == "completed":
+                finished_at = task.completed_at or task.updated_at or task.created_at
+                if finished_at and finished_at >= cutoff:
+                    return CrawlTaskRead.model_validate(task)
+            if task.status == "failed":
+                finished_at = task.completed_at or task.updated_at or task.created_at
+                if finished_at and finished_at >= retry_cutoff:
+                    return CrawlTaskRead.model_validate(task)
+        return None
 
     async def mark_completed(self, task_id: int, result_summary: dict) -> Optional[CrawlTaskRead]:
         task = await self._repo.get_by_id(task_id)

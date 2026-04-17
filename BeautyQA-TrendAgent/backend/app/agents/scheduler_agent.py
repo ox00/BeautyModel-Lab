@@ -37,7 +37,12 @@ class SchedulerAgent(BaseAgent):
                 return AgentResult(success=True, data={"scheduled_tasks": [], "count": 0})
 
             scheduled: list[dict] = []
+            skipped_duplicates: list[dict] = []
             target_platform = normalize_due_platform(context.platform or None)
+            task_config_overrides = context.extra.get("task_config_overrides", {})
+            max_tasks_per_keyword = context.extra.get("max_tasks_per_keyword")
+            dedup_window_hours = int(context.extra.get("dedup_window_hours", 168) or 168)
+            retry_cooldown_hours = int(context.extra.get("retry_cooldown_hours", 24) or 24)
 
             for kw_data in due_keywords:
                 keyword_id = kw_data["id"]
@@ -57,6 +62,8 @@ class SchedulerAgent(BaseAgent):
                         for item in task_candidates
                         if item.get("platform") == target_platform
                     ]
+                if isinstance(max_tasks_per_keyword, int) and max_tasks_per_keyword > 0:
+                    task_candidates = task_candidates[:max_tasks_per_keyword]
 
                 if not task_candidates:
                     logger.info(
@@ -86,12 +93,40 @@ class SchedulerAgent(BaseAgent):
                         "task_dedup_key": candidate["dedup_key"],
                     }
 
+                    duplicate = await self._task_service.find_recent_duplicate(
+                        keyword_id=keyword_id,
+                        dedup_key=candidate["dedup_key"],
+                        within_hours=dedup_window_hours,
+                        retry_cooldown_hours=retry_cooldown_hours,
+                    )
+                    if duplicate:
+                        skipped_duplicates.append(
+                            {
+                                "keyword_id": keyword_id,
+                                "platform": platform,
+                                "task_keyword": task_keyword,
+                                "dedup_key": candidate["dedup_key"],
+                                "existing_task_id": duplicate.id,
+                                "existing_status": duplicate.status,
+                            }
+                        )
+                        logger.info(
+                            "[%s] Skip duplicate task for '%s' on %s (query: %s, existing_task=%s, status=%s)",
+                            self.name,
+                            keyword_text,
+                            platform,
+                            task_keyword,
+                            duplicate.id,
+                            duplicate.status,
+                        )
+                        continue
+
                     task_create = CrawlTaskCreate(keyword_id=keyword_id, platform=platform)
                     task_read = await self._task_service.create_task(
                         task_create,
                         keyword_text,
                         task_keyword=task_keyword,
-                        config_overrides=task_config,
+                        config_overrides={**task_config, **task_config_overrides},
                     )
                     scheduled.append(task_read.model_dump())
 
@@ -106,7 +141,14 @@ class SchedulerAgent(BaseAgent):
                     )
 
             logger.info("[%s] Scheduled %s crawl tasks", self.name, len(scheduled))
-            return AgentResult(success=True, data={"scheduled_tasks": scheduled, "count": len(scheduled)})
+            return AgentResult(
+                success=True,
+                data={
+                    "scheduled_tasks": scheduled,
+                    "skipped_duplicates": skipped_duplicates,
+                    "count": len(scheduled),
+                },
+            )
         except Exception as e:
             logger.error("[%s] Error scheduling tasks: %s", self.name, e)
             return AgentResult(success=False, error=str(e))

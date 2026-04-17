@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Optional
 
 from app.agents.base import BaseAgent, AgentContext, AgentResult
 from app.infrastructure.crawler.adapter import CrawlerAdapter, CrawlRequest
@@ -50,17 +51,33 @@ class CrawlerAgent(BaseAgent):
             return AgentResult(success=False, error="Missing task_id, platform, or keyword in context")
 
         try:
-            # Step 1: Pick an account
+            # Step 1: Get task config
+            task_read = await self._task_service.get_task(task_id)
+            config = task_read.config if task_read else {}
+            task_config = {**(config or {}), **context.extra.get("config", {})}
+            allow_local_state_fallback = bool(task_config.get("allow_local_state_fallback", False))
+
+            # Step 2: Pick an account, or fall back to local browser state in smoke mode
             account = await self._account_service.pick_account_for_crawl(platform)
-            if not account:
+            if not account and not allow_local_state_fallback:
                 error_msg = f"No active account available for platform: {platform}"
                 await self._task_service.mark_failed(task_id, error_msg)
                 return AgentResult(success=False, error=error_msg)
 
-            # Step 2: Get task config
-            task_read = await self._task_service.get_task(task_id)
-            config = task_read.config if task_read else {}
-            task_config = {**(config or {}), **context.extra.get("config", {})}
+            if account:
+                login_type = task_config.get("login_type", account.login_type)
+                cookies = account.cookies
+                account_id: Optional[int] = account.id
+            else:
+                login_type = task_config.get("login_type", "cookie")
+                cookies = task_config.get("cookies", "")
+                account_id = None
+                logger.warning(
+                    "[%s] Task %s is using local state fallback for %s",
+                    self.name,
+                    task_id,
+                    platform,
+                )
 
             # Step 3: Build crawl request
             keywords_for_crawler = task_config.get("keywords_for_crawler", "")
@@ -68,17 +85,19 @@ class CrawlerAgent(BaseAgent):
                 task_id=task_id,
                 platform=platform,
                 keyword=keyword,
-                login_type=task_config.get("login_type", account.login_type),
-                cookies=account.cookies,
+                login_type=login_type,
+                cookies=cookies,
                 headless=task_config.get("headless", True),
                 enable_comments=task_config.get("enable_comments", True),
                 enable_sub_comments=task_config.get("enable_sub_comments", False),
                 start_page=task_config.get("start_page", 1),
+                max_comments_per_note=task_config.get("max_comments_per_note", 10),
+                max_concurrency=task_config.get("max_concurrency", 2),
                 keywords_for_crawler=keywords_for_crawler,
             )
 
             # Step 4: Mark task as running
-            await self._task_service.mark_running(task_id, "", account.id)
+            await self._task_service.mark_running(task_id, "", account_id)
 
             # Step 5: Execute crawl
             logger.info(f"[{self.name}] Starting crawl for task {task_id}: {platform}/{keyword}")

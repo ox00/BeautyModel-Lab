@@ -6,3 +6,6 @@ __pycache__/
 .env
 **/.env
 !**/.env.example
+BeautyQA-TrendAgent/backend/data/cleaned/
+BeautyQA-TrendAgent/backend/data/runtime_runs/
+BeautyQA-TrendAgent/backend/data/trend_signal/

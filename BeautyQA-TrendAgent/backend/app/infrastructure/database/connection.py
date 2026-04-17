@@ -37,8 +37,9 @@ async def get_session() -> AsyncSession:
 
 
 async def init_db() -> None:
-    """Initialize database engine (called on app startup)."""
-    pass
+    """Initialize first-party runtime tables if they do not exist yet."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def close_db() -> None:

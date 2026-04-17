@@ -78,7 +78,11 @@ class CleaningAgent(BaseAgent):
 
         try:
             # Step 1: Read raw data from MediaCrawler tables
-            raw_items = await self._fetch_raw_data(platform, keyword)
+            raw_items = await self._fetch_raw_data(
+                platform,
+                keyword,
+                max_raw_items=context.extra.get("max_raw_items"),
+            )
 
             if not raw_items:
                 logger.info(f"[{self.name}] No raw data found for {platform}/{keyword}")
@@ -115,7 +119,12 @@ class CleaningAgent(BaseAgent):
             logger.error(f"[{self.name}] Cleaning failed for task {task_id}: {e}")
             return AgentResult(success=False, error=str(e))
 
-    async def _fetch_raw_data(self, platform: str, keyword: str) -> list[dict]:
+    async def _fetch_raw_data(
+        self,
+        platform: str,
+        keyword: str,
+        max_raw_items: Optional[int] = None,
+    ) -> list[dict]:
         """Fetch raw data from MediaCrawler tables.
         
         Only fetches posts from the last 12 months to control data volume.
@@ -139,6 +148,8 @@ class CleaningAgent(BaseAgent):
                 {"keyword": keyword, "time_threshold": time_threshold_ms, "time_threshold_str": time_threshold_str},
             )
             rows = result.mappings().all()
+            if isinstance(max_raw_items, int) and max_raw_items > 0:
+                rows = rows[:max_raw_items]
             logger.info(
                 f"[{self.name}] Fetched {len(rows)} raw items for {platform}/{keyword} "
                 f"(time_threshold: {time_threshold_str})"

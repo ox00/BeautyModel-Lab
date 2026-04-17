@@ -7,6 +7,11 @@ from app.tasks.celery_app import celery_app
 from app.agents.base import AgentContext
 from app.agents.cleaning_agent import CleaningAgent
 from app.agents.signal_agent import SignalAgent
+from app.domain.services.keyword_service import KeywordService
+from app.domain.services.task_service import TaskService
+from app.infrastructure.database.connection import async_session_factory
+from app.infrastructure.repositories.keyword_repo_impl import KeywordRepositoryImpl
+from app.infrastructure.repositories.task_repo_impl import TaskRepositoryImpl
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +84,14 @@ async def _process_trend_data_async(crawl_result: dict) -> dict:
         if result.success and not signal_result["success"] and signal_result["error"]:
             error_parts.append(f"signal_generation_failed: {signal_result['error']}")
 
+        await _finalize_task_record(
+            task_id=task_id,
+            cleaned_count=result.data.get("cleaned_count", 0) if result.success else 0,
+            signal_result=signal_result,
+            success=overall_success,
+            error_message="; ".join(error_parts),
+        )
+
         return {
             "task_id": task_id,
             "success": overall_success,
@@ -90,3 +103,43 @@ async def _process_trend_data_async(crawl_result: dict) -> dict:
     except Exception as e:
         logger.error(f"[process_trend_data] Cleaning failed for task {task_id}: {e}")
         return {"task_id": task_id, "success": False, "error": str(e)}
+
+
+async def _finalize_task_record(
+    *,
+    task_id: int,
+    cleaned_count: int,
+    signal_result: dict,
+    success: bool,
+    error_message: str,
+) -> None:
+    async with async_session_factory() as session:
+        task_repo = TaskRepositoryImpl(session)
+        keyword_repo = KeywordRepositoryImpl(session)
+        task_service = TaskService(task_repo)
+        keyword_service = KeywordService(keyword_repo)
+
+        task = await task_service.get_task(task_id)
+        if not task:
+            return
+
+        await task_service.merge_result_summary(
+            task_id,
+            {
+                "cleaned_count": cleaned_count,
+                "signal_generation": signal_result,
+                "pipeline_status": "completed" if success else "failed",
+            },
+        )
+
+        if success:
+            await keyword_service.mark_crawled(task.keyword_id)
+            await task_service.add_log(
+                task_id,
+                "success",
+                f"Post-processing completed. cleaned_count={cleaned_count}, signal_count={signal_result['signal_count']}",
+            )
+        else:
+            await task_service.mark_failed(task_id, error_message or "postprocess_failed")
+
+        await session.commit()
