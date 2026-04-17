@@ -16,6 +16,7 @@ The project should treat:
 - `BeautyQA-TrendAgent/backend/.env` as the single source of truth for runtime DB config
 - `scripts/run_mediacrawler.sh` as the standard manual entrypoint for vendor crawler smoke tests
 - `scripts/run_platform_smoke.sh` as the fast smoke entrypoint for common team usage
+- `docs/19-trendagent-runtime-strategy.md` as the first-party runtime safety policy
 
 ## Fast smoke entrypoint
 

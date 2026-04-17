@@ -20,6 +20,7 @@
 - the current sample CSV path under `data/pipeline_samples/trend_signal/` is for shared sample and smoke only
 - QA should not depend on sample fixtures for runtime data
 - the project needs a stable, repeated, file-based handoff path before broader QA integration
+- export cron should be able to read first-party runtime batch history instead of guessing from ad hoc files
 
 ## Core Position
 - runtime export path and sample path must be separated

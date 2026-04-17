@@ -106,6 +106,48 @@ class CrawlTaskLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
 
+class RuntimeBatchRun(Base):
+    """First-party runtime batch execution record for audit and replay."""
+
+    __tablename__ = "runtime_batch_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    run_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True, comment="Stable runtime batch id")
+    run_type: Mapped[str] = mapped_column(String(32), nullable=False, default="int002_runtime", comment="Batch type: int002_runtime/export/etc.")
+    trigger_source: Mapped[str] = mapped_column(String(32), nullable=False, default="manual", comment="Trigger source: manual/cron/celery/api")
+    profile_name: Mapped[str] = mapped_column(String(32), nullable=False, default="safe_live", comment="Applied runtime profile name")
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="running", comment="Status: running/completed/failed")
+    platforms: Mapped[Optional[list]] = mapped_column(JSON, nullable=True, comment="Requested platforms for the batch run")
+    requested_options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Requested runtime options before policy merge")
+    effective_options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Effective runtime policy/options after merge")
+    summary: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Run summary counts and key outcomes")
+    report_paths: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Generated report artifact paths")
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Top-level batch failure message")
+    started_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), comment="Batch start time")
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Batch completion time")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+
+
+class RuntimeBatchRunEvent(Base):
+    """Keyword/task-level events within a runtime batch."""
+
+    __tablename__ = "runtime_batch_run_events"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    batch_run_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True, comment="FK-like link to runtime_batch_runs.id")
+    run_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="Stable runtime batch id")
+    event_type: Mapped[str] = mapped_column(String(32), nullable=False, comment="scheduled/skipped_duplicate/no_candidates/task_completed/task_failed")
+    platform: Mapped[Optional[str]] = mapped_column(String(32), nullable=True, comment="Target platform")
+    keyword_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, comment="FK-like link to trend_keywords.id")
+    keyword: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="Original keyword")
+    task_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, comment="FK-like link to crawl_tasks.id")
+    dedup_key: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="Task dedup key for replay/audit")
+    payload: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Event payload for audit and replay")
+    message: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Short event note")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+
+
 class CleanedTrendData(Base):
     """Cleaned trend data after AI processing."""
 

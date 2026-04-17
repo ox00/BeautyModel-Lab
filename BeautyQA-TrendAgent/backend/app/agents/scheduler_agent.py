@@ -38,6 +38,7 @@ class SchedulerAgent(BaseAgent):
 
             scheduled: list[dict] = []
             skipped_duplicates: list[dict] = []
+            keyword_events: list[dict] = []
             target_platform = normalize_due_platform(context.platform or None)
             task_config_overrides = context.extra.get("task_config_overrides", {})
             max_tasks_per_keyword = context.extra.get("max_tasks_per_keyword")
@@ -52,6 +53,15 @@ class SchedulerAgent(BaseAgent):
                 expander_result = await self._expander.execute(expander_context)
                 if not expander_result.success:
                     logger.warning("[%s] Keyword plan build failed for '%s', skipping", self.name, keyword_text)
+                    keyword_events.append(
+                        {
+                            "event_type": "planning_failed",
+                            "keyword_id": keyword_id,
+                            "keyword": keyword_text,
+                            "platform": target_platform or "",
+                            "message": expander_result.error or "planning_failed",
+                        }
+                    )
                     continue
 
                 execution_plan = expander_result.data
@@ -71,6 +81,19 @@ class SchedulerAgent(BaseAgent):
                         self.name,
                         keyword_text,
                         execution_plan.get("crawl_targets", []),
+                    )
+                    keyword_events.append(
+                        {
+                            "event_type": "no_task_candidates",
+                            "keyword_id": keyword_id,
+                            "keyword": keyword_text,
+                            "platform": target_platform or "",
+                            "payload": {
+                                "crawl_targets": execution_plan.get("crawl_targets", []),
+                                "reference_sources": execution_plan.get("reference_sources", []),
+                            },
+                            "message": "No crawlable task candidates after policy filtering",
+                        }
                     )
                     continue
 
@@ -100,14 +123,21 @@ class SchedulerAgent(BaseAgent):
                         retry_cooldown_hours=retry_cooldown_hours,
                     )
                     if duplicate:
-                        skipped_duplicates.append(
+                        duplicate_item = {
+                            "keyword_id": keyword_id,
+                            "keyword": keyword_text,
+                            "platform": platform,
+                            "task_keyword": task_keyword,
+                            "dedup_key": candidate["dedup_key"],
+                            "existing_task_id": duplicate.id,
+                            "existing_status": duplicate.status,
+                        }
+                        skipped_duplicates.append(duplicate_item)
+                        keyword_events.append(
                             {
-                                "keyword_id": keyword_id,
-                                "platform": platform,
-                                "task_keyword": task_keyword,
-                                "dedup_key": candidate["dedup_key"],
-                                "existing_task_id": duplicate.id,
-                                "existing_status": duplicate.status,
+                                "event_type": "skipped_duplicate",
+                                **duplicate_item,
+                                "message": f"Skipped duplicate task because existing task {duplicate.id} is {duplicate.status}",
                             }
                         )
                         logger.info(
@@ -128,7 +158,25 @@ class SchedulerAgent(BaseAgent):
                         task_keyword=task_keyword,
                         config_overrides={**task_config, **task_config_overrides},
                     )
-                    scheduled.append(task_read.model_dump())
+                    scheduled_item = task_read.model_dump()
+                    scheduled.append(scheduled_item)
+                    keyword_events.append(
+                        {
+                            "event_type": "scheduled",
+                            "keyword_id": keyword_id,
+                            "keyword": keyword_text,
+                            "platform": platform,
+                            "task_keyword": task_keyword,
+                            "task_id": task_read.id,
+                            "dedup_key": candidate["dedup_key"],
+                            "payload": {
+                                "query_origin": candidate["expansion_type"],
+                                "based_on": candidate["based_on"],
+                                "review_needed": candidate["review_needed"],
+                            },
+                            "message": f"Scheduled task {task_read.id} for query {task_keyword}",
+                        }
+                    )
 
                     logger.info(
                         "[%s] Created crawl task %s for '%s' on %s (query: %s, origin: %s)",
@@ -146,6 +194,7 @@ class SchedulerAgent(BaseAgent):
                 data={
                     "scheduled_tasks": scheduled,
                     "skipped_duplicates": skipped_duplicates,
+                    "keyword_events": keyword_events,
                     "count": len(scheduled),
                 },
             )

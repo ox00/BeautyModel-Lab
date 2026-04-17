@@ -26,6 +26,7 @@ Only the files below are active for current team collaboration.
 20. `16-trend-signal-to-qa-usage-guide.md` - how QA / RAG should parse, index, filter, and use trend_signal
 21. `17-trendagent-vendor-adapter-contract.md` - TrendAgent and vendor crawler adapter contract, stability checks, and hardening direction
 22. `18-mediacrawler-runtime-playbook.md` - standard MediaCrawler runtime entrypoint, DB alignment, and xhs/dy/bili smoke commands
+23. `19-trendagent-runtime-strategy.md` - first-party runtime defaults, platform safety policy, and batch audit tables
 
 ## Archive
 Legacy and exploratory docs were archived to:

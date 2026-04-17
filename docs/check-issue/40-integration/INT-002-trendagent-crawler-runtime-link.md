@@ -96,6 +96,7 @@ The reminder target is the project runtime itself, not a team chat bot.
 ## Recommended Deliverables
 - one integration runner entrypoint
 - one run report schema
+- one first-party batch history record for audit / replay
 - one completed smoke report for a real small run
 - one operator note describing restart / replay strategy
 
