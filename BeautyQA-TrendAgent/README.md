@@ -185,6 +185,11 @@ $env:POSTGRES_DB_NAME="media_crawler"
 ```
 
 > 更推荐使用仓库根目录的统一包装脚本 `scripts/run_mediacrawler.sh` 做手工 smoke test。它会自动加载 `backend/.env` 中的 PostgreSQL 配置，避免误连本机 `5432`。
+>
+> 如果只是做团队日常 smoke，优先使用更上层的 `scripts/run_platform_smoke.sh`：
+> - `./scripts/run_platform_smoke.sh xhs`
+> - `./scripts/run_platform_smoke.sh xhs dy bili`
+> - `./scripts/run_platform_smoke.sh --fresh-login xhs`
 
 ### 3. 运行流水线
 

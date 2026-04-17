@@ -15,6 +15,23 @@ The project should treat:
 
 - `BeautyQA-TrendAgent/backend/.env` as the single source of truth for runtime DB config
 - `scripts/run_mediacrawler.sh` as the standard manual entrypoint for vendor crawler smoke tests
+- `scripts/run_platform_smoke.sh` as the fast smoke entrypoint for common team usage
+
+## Fast smoke entrypoint
+
+For common smoke checks, use the higher-level wrapper:
+
+```bash
+./scripts/run_platform_smoke.sh xhs
+./scripts/run_platform_smoke.sh xhs dy bili
+./scripts/run_platform_smoke.sh --fresh-login xhs
+```
+
+This wrapper:
+- only requires platform codes such as `xhs`, `dy`, `bili`
+- uses the project-tested default keywords per platform
+- reuses `scripts/run_mediacrawler.sh` underneath
+- is intended for repeatable smoke runs, not arbitrary crawler configuration
 
 ## Standard entrypoint
 
@@ -31,6 +48,9 @@ What the wrapper does:
 - exports `POSTGRES_DB_*` defaults that match the Docker PostgreSQL runtime
 - sets writable cache dirs for matplotlib/font cache side effects
 - runs `BeautyQA-vendor/MediaCrawler/main.py`
+
+Use `scripts/run_mediacrawler.sh` when you need full low-level control.
+Use `scripts/run_platform_smoke.sh` when you just want to smoke one or more common platforms quickly.
 
 ## Shared environment baseline
 
