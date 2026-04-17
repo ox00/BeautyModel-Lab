@@ -32,6 +32,7 @@
 - QA 只读取稳定 handoff CSV
 - export job 必须可重复执行，失败时不能覆盖 current 成品文件
 - 需要产出 manifest，方便工程排查
+- 需要产出 SQL / runtime 检查清单，方便团队快速看 batch / task / signal 状态
 
 ## 必须交付
 
@@ -40,6 +41,7 @@
 - handoff directory 说明
 - example export artifact
 - cron / replay note
+- SQL checklist
 - open risks
 
 ## 可直接复制到执行线程
@@ -67,6 +69,7 @@
 - implementation summary
 - export artifact example
 - cron / replay note
+- SQL checklist
 - open risks
 
 如果发现 schema 不足以支持稳定 handoff，暂停并返回 architecture-control。

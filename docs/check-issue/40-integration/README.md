@@ -10,3 +10,8 @@ Current sequence:
 - `INT-002-kickoff_cn.md`
 - `INT-003-trend-signal-export-cron.md`
 - `INT-003-kickoff_cn.md`
+- `INT-003-runtime-sql-checklist.md`
+- `INT-004-trend-signal-series-aggregation.md`
+- `INT-004-kickoff_cn.md`
+- `INT-005-batch-recovery-and-completion-guarantee.md`
+- `INT-005-kickoff_cn.md`

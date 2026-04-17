@@ -27,6 +27,7 @@ Only the files below are active for current team collaboration.
 21. `17-trendagent-vendor-adapter-contract.md` - TrendAgent and vendor crawler adapter contract, stability checks, and hardening direction
 22. `18-mediacrawler-runtime-playbook.md` - standard MediaCrawler runtime entrypoint, DB alignment, and xhs/dy/bili smoke commands
 23. `19-trendagent-runtime-strategy.md` - first-party runtime defaults, platform safety policy, and batch audit tables
+24. `20-trend-signal-timeseries-strategy.md` - unified design for expansion registry, query schedule state, time-bucket series, export, and batch recovery
 
 ## Archive
 Legacy and exploratory docs were archived to:

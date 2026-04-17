@@ -48,8 +48,13 @@ Implementation runs in separate execution threads so design context and debuggin
 - `20-trendagent/TA-001-trendagent-to-qa-contract-adoption.md`
 - `20-trendagent/TA-002-trend-signal-generation-layer.md`
 - `20-trendagent/TA-003-keyword-expansion-alignment.md`
+- `20-trendagent/TA-004-expansion-registry.md`
+- `20-trendagent/TA-005-query-schedule-state.md`
 - `30-qacore/QA-001-trend-signal-retrieval-integration.md`
 - `40-integration/INT-001-e2e-smoke-test.md`
+- `40-integration/INT-003-trend-signal-export-cron.md`
+- `40-integration/INT-004-trend-signal-series-aggregation.md`
+- `40-integration/INT-005-batch-recovery-and-completion-guarantee.md`
 - `50-evaluation/EVAL-001-benchmark-v1.md`
 
 ## Execution Thread Inputs
@@ -61,8 +66,13 @@ Use the kickoff docs below when handing work to a separate implementation thread
 - `20-trendagent/TA-001-kickoff_cn.md`
 - `20-trendagent/TA-002-kickoff_cn.md`
 - `20-trendagent/TA-003-kickoff_cn.md`
+- `20-trendagent/TA-004-kickoff_cn.md`
+- `20-trendagent/TA-005-kickoff_cn.md`
 - `30-qacore/QA-001-kickoff_cn.md`
 - `30-qacore/QA-002-kickoff_cn.md`
 - `30-qacore/QA-003-kickoff_cn.md`
 - `40-integration/INT-001-kickoff_cn.md`
+- `40-integration/INT-003-kickoff_cn.md`
+- `40-integration/INT-004-kickoff_cn.md`
+- `40-integration/INT-005-kickoff_cn.md`
 - `50-evaluation/EVAL-001-kickoff_cn.md`

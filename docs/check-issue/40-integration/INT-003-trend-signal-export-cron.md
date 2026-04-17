@@ -22,6 +22,13 @@
 - the project needs a stable, repeated, file-based handoff path before broader QA integration
 - export cron should be able to read first-party runtime batch history instead of guessing from ad hoc files
 
+## Required Supporting Operator Output
+- one SQL / runtime inspection checklist for:
+  - batch state
+  - task state
+  - cleaned data state
+  - export handoff state
+
 ## Core Position
 - runtime export path and sample path must be separated
 - QA should read one stable handoff CSV, not scan per-task JSON files directly
@@ -96,6 +103,7 @@ Reason:
 - one cron setup note
 - one example export artifact
 - one replay note for partial-failure recovery
+- one runtime SQL checklist
 
 ## Acceptance Criteria
 - repeated export runs are idempotent
