@@ -6,6 +6,7 @@ import logging
 from typing import Optional
 
 from app.domain.models.keyword import KeywordCreate, KeywordUpdate, KeywordRead, KeywordBatchImport, KeywordCsvRow
+from app.domain.services.keyword_expansion_service import normalize_due_platform
 from app.infrastructure.database.models import TrendKeyword
 from app.infrastructure.repositories.keyword_repo_impl import KeywordRepositoryImpl
 
@@ -133,5 +134,5 @@ class KeywordService:
         return results
 
     async def get_due_keywords(self, platform: Optional[str] = None) -> list[KeywordRead]:
-        keywords = await self._repo.list_due_for_crawl(platform)
+        keywords = await self._repo.list_due_for_crawl(normalize_due_platform(platform))
         return [KeywordRead.model_validate(k) for k in keywords]

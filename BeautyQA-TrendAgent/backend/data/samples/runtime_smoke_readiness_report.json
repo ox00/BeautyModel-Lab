@@ -1,0 +1,42 @@
+{
+  "task_id": "runtime-smoke-readiness",
+  "check_date": "2026-04-17",
+  "python_dependencies": {
+    "asyncpg": "ok",
+    "redis": "ok",
+    "aiosqlite": "ok",
+    "sqlalchemy": "ok",
+    "openai": "ok",
+    "multipart": "ok"
+  },
+  "local_infra": {
+    "postgres_5433_open": true,
+    "redis_6379_open": true
+  },
+  "config": {
+    "backend_env_exists": true,
+    "llm_api_key_present": true,
+    "llm_base_url_present": true,
+    "llm_model_present": true
+  },
+  "vendor_runtime": {
+    "vendor_root_exists": true,
+    "vendor_main_exists": true,
+    "browser_state_dirs": [
+      "BeautyQA-vendor/MediaCrawler/browser_data"
+    ]
+  },
+  "summary": {
+    "dependencies_ready": true,
+    "infra_ready": true,
+    "llm_ready": true,
+    "vendor_runtime_ready": true,
+    "browser_state_ready": true,
+    "runtime_smoke_ready": true
+  },
+  "verified_platform_smoke_counts": {
+    "xhs_note": 20,
+    "douyin_aweme": 14,
+    "bilibili_video": 20
+  }
+}

@@ -1,0 +1,5 @@
+# Canonical shared dependency entrypoint for the monorepo.
+# Install from the repo root:
+#   ./.venv/bin/pip install -r requirements.txt
+
+-r BeautyQA-TrendAgent/requirements.txt

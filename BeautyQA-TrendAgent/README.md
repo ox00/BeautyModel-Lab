@@ -145,14 +145,14 @@ python -m venv .venv
 # 激活
 .\.venv\Scripts\Activate.ps1
 
-# 安装全部依赖
+# 安装全部依赖（从仓库根目录执行）
 pip install -r requirements.txt
 
 # 安装 Playwright 浏览器
-playwright install chromium
+./.venv/bin/playwright install chromium
 ```
 
-> **重要：** 根目录的 `requirements.txt` 是项目的唯一依赖清单，已合并 backend 和 MediaCrawler 的全部依赖。`backend/requirements.txt` 和 `../BeautyQA-vendor/MediaCrawler/requirements.txt` 仅供参考，无需单独安装。
+> **重要：** 仓库根目录 `requirements.txt` 是统一安装入口，它会转发到 `BeautyQA-TrendAgent/requirements.txt`。`backend/requirements.txt` 和 `../BeautyQA-vendor/MediaCrawler/requirements.txt` 仅作为子模块参考，不应成为团队默认安装入口。
 
 ---
 
@@ -176,8 +176,15 @@ docker ps
 
 ```powershell
 cd ..\BeautyQA-vendor\MediaCrawler
+$env:POSTGRES_DB_HOST="localhost"
+$env:POSTGRES_DB_PORT="5433"
+$env:POSTGRES_DB_USER="postgres"
+$env:POSTGRES_DB_PWD="123456"
+$env:POSTGRES_DB_NAME="media_crawler"
 ..\..\.venv\Scripts\python.exe main.py --init_db postgres
 ```
+
+> 更推荐使用仓库根目录的统一包装脚本 `scripts/run_mediacrawler.sh` 做手工 smoke test。它会自动加载 `backend/.env` 中的 PostgreSQL 配置，避免误连本机 `5432`。
 
 ### 3. 运行流水线
 

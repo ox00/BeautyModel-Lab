@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from app.domain.models.crawl_task import CrawlTaskCreate, CrawlTaskRead
 from app.infrastructure.database.models import CrawlTask
@@ -17,20 +17,31 @@ class TaskService:
     def __init__(self, repo: TaskRepositoryImpl) -> None:
         self._repo = repo
 
-    async def create_task(self, data: CrawlTaskCreate, keyword_text: str) -> CrawlTaskRead:
+    async def create_task(
+        self,
+        data: CrawlTaskCreate,
+        keyword_text: str,
+        *,
+        task_keyword: Optional[str] = None,
+        config_overrides: Optional[dict[str, Any]] = None,
+    ) -> CrawlTaskRead:
+        config = {
+            "login_type": data.login_type,
+            "headless": data.headless,
+            "enable_comments": data.enable_comments,
+            "enable_sub_comments": data.enable_sub_comments,
+            "start_page": data.start_page,
+            "max_notes_count": data.max_notes_count,
+        }
+        if config_overrides:
+            config.update(config_overrides)
+
         task = CrawlTask(
             keyword_id=data.keyword_id,
-            keyword=keyword_text,
+            keyword=task_keyword or keyword_text,
             platform=data.platform,
             status="pending",
-            config={
-                "login_type": data.login_type,
-                "headless": data.headless,
-                "enable_comments": data.enable_comments,
-                "enable_sub_comments": data.enable_sub_comments,
-                "start_page": data.start_page,
-                "max_notes_count": data.max_notes_count,
-            },
+            config=config,
         )
         task = await self._repo.create(task)
         return CrawlTaskRead.model_validate(task)

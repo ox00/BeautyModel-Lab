@@ -3,107 +3,90 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from openai import AsyncOpenAI
 
 from app.agents.base import BaseAgent, AgentContext, AgentResult
 from app.config.settings import settings
+from app.domain.services.keyword_expansion_service import (
+    build_keyword_execution_plan,
+    parse_query_variants,
+)
 
 logger = logging.getLogger(__name__)
 
-# User prompt template kept inline (short, stable interface between code and skill)
 KEYWORD_EXPANSION_USER_TEMPLATE = """原始关键词: {original_keyword}
+归一化主题: {normalized_keyword}
 主题簇: {topic_cluster}
 趋势类型: {trend_type}
+抓取目标: {crawl_goal}
+平台: {platform}
+风险等级: {risk_flag}
+优先级: {priority}
+置信度: {confidence}
 已有变体: {existing_variants}
 
-请生成扩充后的美妆护肤领域搜索词，严格按以下JSON格式返回：
-{{"expanded_keywords": ["搜索词1", "搜索词2", "搜索词3"]}}"""
+请只补充 1-2 个适合该平台抓取的新增搜索词，严格按以下JSON格式返回：
+{{"expanded_keywords": ["搜索词1", "搜索词2"]}}"""
 
 
 def _load_skill_system_prompt(skill_path: str) -> str:
-    """Load the System Prompt section from the skill markdown file.
-
-    The skill file (enhance_trend_keyword.md) contains a '### System Prompt'
-    section with the full LLM instruction. This function extracts that section
-    so the prompt stays in sync with the skill file — just edit the .md file
-    and the agent picks up changes automatically.
-    """
+    """Load the System Prompt section from the skill markdown file."""
     path = Path(skill_path)
     if not path.exists():
-        logger.warning(f"[KeywordExpanderAgent] Skill file not found: {skill_path}, using fallback prompt")
+        logger.warning("[KeywordExpanderAgent] Skill file not found: %s, using fallback prompt", skill_path)
         return _fallback_system_prompt()
 
     content = path.read_text(encoding="utf-8")
-
-    # Extract the System Prompt section between "### System Prompt" and next "###" or "##"
-    # The skill file has: ### System Prompt\n```\n...content...\n```\n
     marker = "### System Prompt"
     idx = content.find(marker)
     if idx == -1:
-        logger.warning(f"[KeywordExpanderAgent] '### System Prompt' not found in {skill_path}, using fallback")
+        logger.warning("[KeywordExpanderAgent] '### System Prompt' not found in %s, using fallback", skill_path)
         return _fallback_system_prompt()
 
-    # Find the opening code block after the marker
     after_marker = content[idx + len(marker):]
     code_start = after_marker.find("```")
     if code_start == -1:
-        # No code block, take everything until next ## heading
         next_section = after_marker.find("\n## ")
-        if next_section == -1:
-            prompt_text = after_marker.strip()
-        else:
-            prompt_text = after_marker[:next_section].strip()
+        prompt_text = after_marker.strip() if next_section == -1 else after_marker[:next_section].strip()
     else:
-        # Extract content inside the code block
         after_code_start = after_marker[code_start + 3:]
-        # Skip the language identifier line (e.g. blank line after ```)
         newline_after_code = after_code_start.find("\n")
         if newline_after_code != -1:
             after_code_start = after_code_start[newline_after_code + 1:]
         code_end = after_code_start.find("```")
-        if code_end == -1:
-            prompt_text = after_code_start.strip()
-        else:
-            prompt_text = after_code_start[:code_end].strip()
+        prompt_text = after_code_start.strip() if code_end == -1 else after_code_start[:code_end].strip()
 
     if not prompt_text:
-        logger.warning(f"[KeywordExpanderAgent] Empty system prompt extracted from {skill_path}, using fallback")
+        logger.warning("[KeywordExpanderAgent] Empty system prompt extracted from %s, using fallback", skill_path)
         return _fallback_system_prompt()
 
-    logger.info(f"[KeywordExpanderAgent] Loaded system prompt from {skill_path} ({len(prompt_text)} chars)")
+    logger.info("[KeywordExpanderAgent] Loaded system prompt from %s (%s chars)", skill_path, len(prompt_text))
     return prompt_text
 
 
 def _fallback_system_prompt() -> str:
-    """Minimal fallback prompt if the skill file is unavailable."""
     return (
         "你是一个专门为美妆护肤领域社交媒体爬虫服务的关键词扩充专家。"
-        "根据用户提供的原始趋势关键词及其元数据，生成3~6个聚焦于美妆护肤领域的搜索词变体。"
+        "根据用户提供的原始趋势关键词及其元数据，只补充少量更适合平台抓取的搜索词变体。"
         "所有搜索词必须明确指向护肤品、化妆品、个人护理相关内容。"
         "返回JSON格式：{\"expanded_keywords\": [\"词1\", \"词2\"]}"
     )
 
 
 class KeywordExpanderAgent(BaseAgent):
-    """Agent responsible for expanding trend keywords into beauty/skincare-focused
-    search terms using LLM.
-
-    This agent:
-    1. Loads the System Prompt from the skill markdown file at runtime
-    2. Takes a keyword with its metadata (topic_cluster, trend_type, query_variants)
-    3. Calls LLM to generate beauty-domain-specific search variants
-    4. Merges expanded keywords with existing variants (deduped)
-    5. Returns the final search keyword list for MediaCrawler
-    """
+    """Build a platform-aware execution plan for trend keyword crawling."""
 
     def __init__(self) -> None:
-        self._client = AsyncOpenAI(
-            api_key=settings.LLM_API_KEY,
-            base_url=settings.LLM_BASE_URL,
+        self._client = (
+            AsyncOpenAI(
+                api_key=settings.LLM_API_KEY,
+                base_url=settings.LLM_BASE_URL,
+            )
+            if settings.LLM_API_KEY
+            else None
         )
-        # Load system prompt from skill file at init time
         self._system_prompt = _load_skill_system_prompt(settings.KEYWORD_SKILL_PATH)
 
     @property
@@ -111,86 +94,71 @@ class KeywordExpanderAgent(BaseAgent):
         return "KeywordExpanderAgent"
 
     async def execute(self, context: AgentContext) -> AgentResult:
-        """Expand a keyword into beauty-focused search terms.
-
-        Expects context to have:
-        - keyword: The original trend keyword
-        - extra['topic_cluster']: Topic cluster (e.g. 'ingredient_technology')
-        - extra['trend_type']: Trend type (e.g. 'ingredient', 'claim')
-        - extra['query_variants']: Pipe-separated existing variants (optional)
-        """
         keyword = context.keyword
         if not keyword:
             return AgentResult(success=False, error="Missing keyword in context")
 
-        topic_cluster = context.extra.get("topic_cluster", "")
-        trend_type = context.extra.get("trend_type", "ingredient")
-        query_variants_str = context.extra.get("query_variants", "")
-
-        # Parse existing variants from pipe-separated string
-        existing_variants = [v.strip() for v in query_variants_str.split("|") if v.strip()]
+        keyword_meta: dict[str, Any] = {
+            "keyword_id": context.extra.get("keyword_id", ""),
+            "keyword": keyword,
+            "normalized_keyword": context.extra.get("normalized_keyword", keyword),
+            "topic_cluster": context.extra.get("topic_cluster", ""),
+            "trend_type": context.extra.get("trend_type", "ingredient"),
+            "query_variants": context.extra.get("query_variants", ""),
+            "suggested_platforms": context.extra.get("suggested_platforms", "xiaohongshu"),
+            "crawl_goal": context.extra.get("crawl_goal", "trend_discovery"),
+            "risk_flag": context.extra.get("risk_flag", "low"),
+            "priority": context.extra.get("priority", "medium"),
+            "confidence": context.extra.get("confidence", "medium"),
+            "signal_period_type": context.extra.get("signal_period_type", ""),
+            "signal_period_label": context.extra.get("signal_period_label", ""),
+            "report_id": context.extra.get("report_id", ""),
+            "notes": context.extra.get("notes", ""),
+        }
 
         try:
-            expanded_keywords = await self._expand_keyword(
-                keyword, topic_cluster, trend_type, existing_variants
-            )
+            baseline_plan = build_keyword_execution_plan(keyword_meta)
+            llm_supplements: dict[str, list[str]] = {}
 
-            # Merge: original keyword + top expanded keywords (deduped, max 3 total)
-            # Limit to avoid triggering platform anti-crawl when searching too many keywords
-            MAX_CRAWL_KEYWORDS = 3
-            merged = [keyword]  # Always include original
-            for v in expanded_keywords:
-                if v not in merged:
-                    merged.append(v)
-                if len(merged) >= MAX_CRAWL_KEYWORDS:
-                    break
-            # existing variants are lower priority, add if room
-            for v in existing_variants:
-                if v not in merged and len(merged) < MAX_CRAWL_KEYWORDS:
-                    merged.append(v)
+            if context.extra.get("enable_llm", True):
+                for platform in baseline_plan["crawl_targets"]:
+                    llm_supplements[platform] = await self._expand_keyword(keyword_meta, platform)
+
+            plan = build_keyword_execution_plan(keyword_meta, llm_supplements=llm_supplements)
 
             logger.info(
-                f"[{self.name}] Expanded keyword '{keyword}': "
-                f"{len(existing_variants)} existing + {len(expanded_keywords)} new → {len(merged)} for crawl"
+                "[%s] Built execution plan for '%s': %s crawl targets, %s reference sources, %s task candidates",
+                self.name,
+                keyword,
+                len(plan.get("crawl_targets", [])),
+                len(plan.get("reference_sources", [])),
+                len(plan.get("task_candidates", [])),
             )
-
-            return AgentResult(
-                success=True,
-                data={
-                    "original_keyword": keyword,
-                    "expanded_keywords": expanded_keywords,
-                    "merged_keywords": merged,
-                    # Comma-separated for MediaCrawler --keywords arg
-                    "keywords_for_crawler": ",".join(merged),
-                },
-            )
-
+            return AgentResult(success=True, data=plan)
         except Exception as e:
-            logger.error(f"[{self.name}] Keyword expansion failed for '{keyword}': {e}")
-            # Fallback: use original keyword + existing variants only
-            fallback = [keyword] + existing_variants
-            return AgentResult(
-                success=True,
-                data={
-                    "original_keyword": keyword,
-                    "expanded_keywords": [],
-                    "merged_keywords": fallback,
-                    "keywords_for_crawler": ",".join(fallback),
-                },
-            )
+            logger.error("[%s] Keyword planning failed for '%s': %s", self.name, keyword, e)
+            fallback = build_keyword_execution_plan(keyword_meta)
+            return AgentResult(success=True, data=fallback)
 
     async def _expand_keyword(
         self,
-        keyword: str,
-        topic_cluster: str,
-        trend_type: str,
-        existing_variants: list[str],
+        keyword_meta: dict[str, Any],
+        platform: str,
     ) -> list[str]:
-        """Call LLM to expand a keyword into beauty-focused search terms."""
+        if self._client is None:
+            return []
+
+        existing_variants = parse_query_variants(keyword_meta.get("query_variants"))
         user_prompt = KEYWORD_EXPANSION_USER_TEMPLATE.format(
-            original_keyword=keyword,
-            topic_cluster=topic_cluster or "unknown",
-            trend_type=trend_type,
+            original_keyword=keyword_meta.get("keyword", ""),
+            normalized_keyword=keyword_meta.get("normalized_keyword", keyword_meta.get("keyword", "")),
+            topic_cluster=keyword_meta.get("topic_cluster", "") or "unknown",
+            trend_type=keyword_meta.get("trend_type", "ingredient"),
+            crawl_goal=keyword_meta.get("crawl_goal", "trend_discovery"),
+            platform=platform,
+            risk_flag=keyword_meta.get("risk_flag", "low"),
+            priority=keyword_meta.get("priority", "medium"),
+            confidence=keyword_meta.get("confidence", "medium"),
             existing_variants=str(existing_variants) if existing_variants else "[]",
         )
 
@@ -201,12 +169,11 @@ class KeywordExpanderAgent(BaseAgent):
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0.3,
-            max_tokens=500,
+            max_tokens=400,
             extra_body={"thinking": {"type": "disabled"}},
         )
 
         content = response.choices[0].message.content or "{}"
-        # Strip markdown code block wrappers (e.g. ```json ... ```)
         content = content.strip()
         if content.startswith("```"):
             first_newline = content.index("\n") + 1
@@ -216,9 +183,7 @@ class KeywordExpanderAgent(BaseAgent):
 
         result = json.loads(content)
         expanded = result.get("expanded_keywords", [])
-
         if not isinstance(expanded, list):
-            logger.warning(f"[{self.name}] LLM returned non-list expanded_keywords: {type(expanded)}")
+            logger.warning("[%s] LLM returned non-list expanded_keywords: %s", self.name, type(expanded))
             return []
-
         return [str(kw).strip() for kw in expanded if str(kw).strip()]

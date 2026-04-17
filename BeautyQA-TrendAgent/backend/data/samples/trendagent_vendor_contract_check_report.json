@@ -1,0 +1,86 @@
+{
+  "task_id": "TrendAgent-vendor-contract-check",
+  "check_date": "2026-04-16",
+  "vendor_root": "BeautyQA-vendor/MediaCrawler",
+  "path_contract": {
+    "settings_mediacrawler_dir": "/Users/liuzhicheng/1data/workspace2026/LN-projs/BeautyModel-Lab/BeautyQA-vendor/MediaCrawler",
+    "settings_path_exists": true,
+    "vendor_key_files_exist": {
+      "main_entry": true,
+      "cli_args": true,
+      "db_config": true,
+      "db_models": true
+    }
+  },
+  "cli_contract": {
+    "required_args_present": {
+      "--platform": true,
+      "--lt": true,
+      "--type": true,
+      "--keywords": true,
+      "--save_data_option": true,
+      "--headless": true,
+      "--get_comment": true,
+      "--get_sub_comment": true,
+      "--max_comments_count_singlenotes": true,
+      "--max_concurrency_num": true,
+      "--init_db": true
+    },
+    "sample_command": [
+      "/opt/anaconda3/bin/python3",
+      "main.py",
+      "--platform",
+      "xhs",
+      "--lt",
+      "cookie",
+      "--type",
+      "search",
+      "--keywords",
+      "外泌体 护肤",
+      "--save_data_option",
+      "postgres",
+      "--headless",
+      "true",
+      "--get_comment",
+      "true",
+      "--get_sub_comment",
+      "false",
+      "--max_comments_count_singlenotes",
+      "10",
+      "--max_concurrency_num",
+      "2"
+    ],
+    "sample_cwd": "/Users/liuzhicheng/1data/workspace2026/LN-projs/BeautyModel-Lab/BeautyQA-vendor/MediaCrawler",
+    "sample_cwd_matches_settings": true
+  },
+  "env_contract": {
+    "required_env_vars_present": {
+      "POSTGRES_DB_HOST": true,
+      "POSTGRES_DB_PORT": true,
+      "POSTGRES_DB_USER": true,
+      "POSTGRES_DB_PWD": true,
+      "POSTGRES_DB_NAME": true
+    }
+  },
+  "raw_schema_contract": {
+    "vendor_models_have_required_tables": {
+      "xhs_note": true,
+      "douyin_aweme": true,
+      "bilibili_video": true,
+      "weibo_note": true
+    },
+    "cleaning_agent_references_same_tables": {
+      "xhs_note": true,
+      "douyin_aweme": true,
+      "bilibili_video": true,
+      "weibo_note": true
+    }
+  },
+  "summary": {
+    "path_contract_ok": true,
+    "cli_contract_ok": true,
+    "env_contract_ok": true,
+    "raw_schema_contract_ok": true,
+    "all_contracts_ok": true
+  }
+}

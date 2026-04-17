@@ -1,0 +1,318 @@
+{
+  "task_id": "TA-003-scheduler-backtest",
+  "backtest_date": "2026-04-16",
+  "seed_file": "data/eval/trend_monitor/2026-04-13-trend-keyword-seed.csv",
+  "all_platform_run": {
+    "scheduled_count": 16,
+    "success": true,
+    "per_keyword_task_count": {
+      "外泌体": 6,
+      "面部清洁": 6,
+      "快速美白": 4
+    },
+    "checks": [
+      {
+        "task_id": 1,
+        "platform": "xhs",
+        "keyword": "外泌体",
+        "query_origin": "seed",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 2,
+        "platform": "xhs",
+        "keyword": "外泌体 护肤",
+        "query_origin": "domain_constraint",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 3,
+        "platform": "xhs",
+        "keyword": "外泌体 趋势",
+        "query_origin": "scenario_binding",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 4,
+        "platform": "dy",
+        "keyword": "外泌体",
+        "query_origin": "seed",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 5,
+        "platform": "dy",
+        "keyword": "外泌体 趋势",
+        "query_origin": "platform_style",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 6,
+        "platform": "dy",
+        "keyword": "外泌体 成分",
+        "query_origin": "domain_constraint",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 7,
+        "platform": "dy",
+        "keyword": "面部清洁",
+        "query_origin": "seed",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 8,
+        "platform": "dy",
+        "keyword": "面部清洁 趋势",
+        "query_origin": "platform_style",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 9,
+        "platform": "dy",
+        "keyword": "面部清洁 成分",
+        "query_origin": "domain_constraint",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 10,
+        "platform": "xhs",
+        "keyword": "面部清洁",
+        "query_origin": "seed",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 11,
+        "platform": "xhs",
+        "keyword": "面部清洁 护肤",
+        "query_origin": "domain_constraint",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 12,
+        "platform": "xhs",
+        "keyword": "面部清洁 趋势",
+        "query_origin": "scenario_binding",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 13,
+        "platform": "dy",
+        "keyword": "快速美白",
+        "query_origin": "seed",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 14,
+        "platform": "dy",
+        "keyword": "快速美白 风险",
+        "query_origin": "risk_probe",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 15,
+        "platform": "xhs",
+        "keyword": "快速美白",
+        "query_origin": "seed",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 16,
+        "platform": "xhs",
+        "keyword": "快速美白 风险",
+        "query_origin": "risk_probe",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      }
+    ]
+  },
+  "target_platform_run": {
+    "input_platform": "xhs",
+    "scheduled_count": 8,
+    "success": true,
+    "all_platforms_are_xhs": true,
+    "checks": [
+      {
+        "task_id": 1,
+        "platform": "xhs",
+        "keyword": "外泌体",
+        "query_origin": "seed",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 2,
+        "platform": "xhs",
+        "keyword": "外泌体 护肤",
+        "query_origin": "domain_constraint",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 3,
+        "platform": "xhs",
+        "keyword": "外泌体 趋势",
+        "query_origin": "scenario_binding",
+        "reference_sources": [
+          "industry_news"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 4,
+        "platform": "xhs",
+        "keyword": "面部清洁",
+        "query_origin": "seed",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 5,
+        "platform": "xhs",
+        "keyword": "面部清洁 护肤",
+        "query_origin": "domain_constraint",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 6,
+        "platform": "xhs",
+        "keyword": "面部清洁 趋势",
+        "query_origin": "scenario_binding",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 7,
+        "platform": "xhs",
+        "keyword": "快速美白",
+        "query_origin": "seed",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      },
+      {
+        "task_id": 8,
+        "platform": "xhs",
+        "keyword": "快速美白 风险",
+        "query_origin": "risk_probe",
+        "reference_sources": [
+          "taobao"
+        ],
+        "missing_config_fields": [],
+        "keyword_matches_keywords_for_crawler": true,
+        "reference_not_as_platform": true
+      }
+    ]
+  },
+  "summary": {
+    "all_task_configs_complete": true,
+    "all_tasks_use_single_query_payload": true,
+    "reference_sources_never_scheduled": true,
+    "target_platform_filter_valid": true
+  }
+}

@@ -50,6 +50,16 @@ class DouyinStoreFactory:
         return store_class()
 
 
+def _safe_int(value, default: int = 0) -> int:
+    """Convert numeric string-like values to int for DB-backed storage."""
+    try:
+        if value is None or value == "":
+            return default
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def _extract_note_image_list(aweme_detail: Dict) -> List[str]:
     """
     Extract note image list
@@ -155,7 +165,7 @@ def _extract_music_download_url(aweme_detail: Dict) -> str:
 
 
 async def update_douyin_aweme(aweme_item: Dict):
-    aweme_id = aweme_item.get("aweme_id")
+    aweme_id = _safe_int(aweme_item.get("aweme_id"))
     user_info = aweme_item.get("author", {})
     interact_info = aweme_item.get("statistics", {})
     save_content_item = {
@@ -163,7 +173,7 @@ async def update_douyin_aweme(aweme_item: Dict):
         "aweme_type": str(aweme_item.get("aweme_type")),
         "title": aweme_item.get("desc", ""),
         "desc": aweme_item.get("desc", ""),
-        "create_time": aweme_item.get("create_time"),
+        "create_time": _safe_int(aweme_item.get("create_time")),
         "user_id": user_info.get("uid"),
         "sec_uid": user_info.get("sec_uid"),
         "short_user_id": user_info.get("short_id"),
@@ -196,17 +206,18 @@ async def batch_update_dy_aweme_comments(aweme_id: str, comments: List[Dict]):
 
 
 async def update_dy_aweme_comment(aweme_id: str, comment_item: Dict):
-    comment_aweme_id = comment_item.get("aweme_id")
+    aweme_id = _safe_int(aweme_id)
+    comment_aweme_id = _safe_int(comment_item.get("aweme_id"))
     if aweme_id != comment_aweme_id:
         utils.logger.error(f"[store.douyin.update_dy_aweme_comment] comment_aweme_id: {comment_aweme_id} != aweme_id: {aweme_id}")
         return
     user_info = comment_item.get("user", {})
-    comment_id = comment_item.get("cid")
+    comment_id = _safe_int(comment_item.get("cid"))
     parent_comment_id = comment_item.get("reply_id", "0")
     avatar_info = (user_info.get("avatar_medium", {}) or user_info.get("avatar_300x300", {}) or user_info.get("avatar_168x168", {}) or user_info.get("avatar_thumb", {}) or {})
     save_comment_item = {
         "comment_id": comment_id,
-        "create_time": comment_item.get("create_time"),
+        "create_time": _safe_int(comment_item.get("create_time")),
         "ip_location": comment_item.get("ip_label", ""),
         "aweme_id": aweme_id,
         "content": comment_item.get("text"),

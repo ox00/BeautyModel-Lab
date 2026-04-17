@@ -1,0 +1,388 @@
+{
+  "task_id": "TA-003",
+  "backtest_date": "2026-04-16",
+  "seed_file": "data/eval/trend_monitor/2026-04-13-trend-keyword-seed.csv",
+  "summary": {
+    "selected_case_count": 3,
+    "reference_not_scheduled": true,
+    "platform_filtering_valid": true,
+    "platform_specific_packages_present": true
+  },
+  "cases": [
+    {
+      "keyword_id": "KW_0002",
+      "keyword": "外泌体",
+      "crawl_goal": "trend_discovery",
+      "risk_flag": "medium",
+      "legacy_before": {
+        "keywords_for_crawler": "外泌体,EXOSOMES,exosome",
+        "same_query_for_all_targets": true,
+        "suggested_platforms_raw": "xiaohongshu|douyin|industry_news"
+      },
+      "ta003_after": {
+        "crawl_targets": [
+          "xiaohongshu",
+          "douyin"
+        ],
+        "reference_sources": [
+          "industry_news"
+        ],
+        "reference_packages": [
+          {
+            "source": "industry_news",
+            "execution_mode": "reference_only",
+            "queries": [
+              "外泌体",
+              "外泌体 行业趋势",
+              "外泌体 原料创新"
+            ]
+          }
+        ],
+        "platform_packages": [
+          {
+            "platform": "xiaohongshu",
+            "platform_code": "xhs",
+            "review_needed": false,
+            "query_count": 3,
+            "queries": [
+              {
+                "expanded_query": "外泌体",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "seed",
+                "based_on": "外泌体",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0002__xiaohongshu__外泌体"
+              },
+              {
+                "expanded_query": "外泌体 护肤",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "domain_constraint",
+                "based_on": "外泌体",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0002__xiaohongshu__外泌体 护肤"
+              },
+              {
+                "expanded_query": "外泌体 趋势",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "scenario_binding",
+                "based_on": "外泌体",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0002__xiaohongshu__外泌体 趋势"
+              }
+            ]
+          },
+          {
+            "platform": "douyin",
+            "platform_code": "dy",
+            "review_needed": false,
+            "query_count": 3,
+            "queries": [
+              {
+                "expanded_query": "外泌体",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "seed",
+                "based_on": "外泌体",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0002__douyin__外泌体"
+              },
+              {
+                "expanded_query": "外泌体 趋势",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "platform_style",
+                "based_on": "外泌体",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0002__douyin__外泌体 趋势"
+              },
+              {
+                "expanded_query": "外泌体 成分",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "domain_constraint",
+                "based_on": "外泌体",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0002__douyin__外泌体 成分"
+              }
+            ]
+          }
+        ],
+        "scheduled_platforms": [
+          "douyin",
+          "xiaohongshu"
+        ],
+        "scheduled_query_count": 6,
+        "scheduled_queries": [
+          "外泌体",
+          "外泌体 护肤",
+          "外泌体 趋势",
+          "外泌体",
+          "外泌体 趋势",
+          "外泌体 成分"
+        ]
+      },
+      "checks": {
+        "reference_not_scheduled": true,
+        "all_scheduled_platforms_are_crawl_targets": true,
+        "has_platform_specific_packages": true
+      }
+    },
+    {
+      "keyword_id": "KW_0031",
+      "keyword": "面部清洁",
+      "crawl_goal": "trend_discovery",
+      "risk_flag": "low",
+      "legacy_before": {
+        "keywords_for_crawler": "面部清洁,洁面,清洁类产品",
+        "same_query_for_all_targets": true,
+        "suggested_platforms_raw": "douyin|xiaohongshu|taobao"
+      },
+      "ta003_after": {
+        "crawl_targets": [
+          "douyin",
+          "xiaohongshu"
+        ],
+        "reference_sources": [
+          "taobao"
+        ],
+        "reference_packages": [
+          {
+            "source": "taobao",
+            "execution_mode": "reference_only",
+            "queries": [
+              "面部清洁",
+              "面部清洁 精华",
+              "面部清洁 护肤品"
+            ]
+          }
+        ],
+        "platform_packages": [
+          {
+            "platform": "douyin",
+            "platform_code": "dy",
+            "review_needed": false,
+            "query_count": 3,
+            "queries": [
+              {
+                "expanded_query": "面部清洁",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "seed",
+                "based_on": "面部清洁",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0031__douyin__面部清洁"
+              },
+              {
+                "expanded_query": "面部清洁 趋势",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "platform_style",
+                "based_on": "面部清洁",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0031__douyin__面部清洁 趋势"
+              },
+              {
+                "expanded_query": "面部清洁 成分",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "domain_constraint",
+                "based_on": "面部清洁",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0031__douyin__面部清洁 成分"
+              }
+            ]
+          },
+          {
+            "platform": "xiaohongshu",
+            "platform_code": "xhs",
+            "review_needed": false,
+            "query_count": 3,
+            "queries": [
+              {
+                "expanded_query": "面部清洁",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "seed",
+                "based_on": "面部清洁",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0031__xiaohongshu__面部清洁"
+              },
+              {
+                "expanded_query": "面部清洁 护肤",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "domain_constraint",
+                "based_on": "面部清洁",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0031__xiaohongshu__面部清洁 护肤"
+              },
+              {
+                "expanded_query": "面部清洁 趋势",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "scenario_binding",
+                "based_on": "面部清洁",
+                "crawl_goal": "trend_discovery",
+                "confidence": "high",
+                "review_needed": false,
+                "dedup_key": "KW_0031__xiaohongshu__面部清洁 趋势"
+              }
+            ]
+          }
+        ],
+        "scheduled_platforms": [
+          "douyin",
+          "xiaohongshu"
+        ],
+        "scheduled_query_count": 6,
+        "scheduled_queries": [
+          "面部清洁",
+          "面部清洁 趋势",
+          "面部清洁 成分",
+          "面部清洁",
+          "面部清洁 护肤",
+          "面部清洁 趋势"
+        ]
+      },
+      "checks": {
+        "reference_not_scheduled": true,
+        "all_scheduled_platforms_are_crawl_targets": true,
+        "has_platform_specific_packages": true
+      }
+    },
+    {
+      "keyword_id": "KW_0040",
+      "keyword": "快速美白",
+      "crawl_goal": "risk_monitoring",
+      "risk_flag": "high",
+      "legacy_before": {
+        "keywords_for_crawler": "快速美白,7天美白,28天焕白",
+        "same_query_for_all_targets": true,
+        "suggested_platforms_raw": "douyin|xiaohongshu|taobao"
+      },
+      "ta003_after": {
+        "crawl_targets": [
+          "douyin",
+          "xiaohongshu"
+        ],
+        "reference_sources": [
+          "taobao"
+        ],
+        "reference_packages": [
+          {
+            "source": "taobao",
+            "execution_mode": "reference_only",
+            "queries": [
+              "快速美白",
+              "快速美白 护肤品",
+              "快速美白 功效"
+            ]
+          }
+        ],
+        "platform_packages": [
+          {
+            "platform": "douyin",
+            "platform_code": "dy",
+            "review_needed": true,
+            "query_count": 2,
+            "queries": [
+              {
+                "expanded_query": "快速美白",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "seed",
+                "based_on": "快速美白",
+                "crawl_goal": "risk_monitoring",
+                "confidence": "medium",
+                "review_needed": true,
+                "dedup_key": "KW_0040__douyin__快速美白"
+              },
+              {
+                "expanded_query": "快速美白 风险",
+                "platform": "douyin",
+                "platform_code": "dy",
+                "expansion_type": "risk_probe",
+                "based_on": "快速美白",
+                "crawl_goal": "risk_monitoring",
+                "confidence": "medium",
+                "review_needed": true,
+                "dedup_key": "KW_0040__douyin__快速美白 风险"
+              }
+            ]
+          },
+          {
+            "platform": "xiaohongshu",
+            "platform_code": "xhs",
+            "review_needed": true,
+            "query_count": 2,
+            "queries": [
+              {
+                "expanded_query": "快速美白",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "seed",
+                "based_on": "快速美白",
+                "crawl_goal": "risk_monitoring",
+                "confidence": "medium",
+                "review_needed": true,
+                "dedup_key": "KW_0040__xiaohongshu__快速美白"
+              },
+              {
+                "expanded_query": "快速美白 风险",
+                "platform": "xiaohongshu",
+                "platform_code": "xhs",
+                "expansion_type": "risk_probe",
+                "based_on": "快速美白",
+                "crawl_goal": "risk_monitoring",
+                "confidence": "medium",
+                "review_needed": true,
+                "dedup_key": "KW_0040__xiaohongshu__快速美白 风险"
+              }
+            ]
+          }
+        ],
+        "scheduled_platforms": [
+          "douyin",
+          "xiaohongshu"
+        ],
+        "scheduled_query_count": 4,
+        "scheduled_queries": [
+          "快速美白",
+          "快速美白 风险",
+          "快速美白",
+          "快速美白 风险"
+        ]
+      },
+      "checks": {
+        "reference_not_scheduled": true,
+        "all_scheduled_platforms_are_crawl_targets": true,
+        "has_platform_specific_packages": true
+      }
+    }
+  ]
+}
