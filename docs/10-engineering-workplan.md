@@ -46,7 +46,9 @@ These five tables are enough for the first engineering loop. Do not add more dat
 
 ## 7. Module Contracts
 - Input to pipeline: user query, optional profile bucket, optional target product/category.
-- Output from retrieval: ranked evidence items with source table, source id, score, and snippet.
+- Input to retrieval: `query`, `intent`, optional `filters` (`category`, `product_id`, `need_trend`, reserved `profile_bucket`)
+- Output from retrieval: ranked `EvidenceItem` objects with `source_table`, `source_id`, `title`, `snippet`, `score`, `timestamp`, `evidence_type`, `risk_flag`, and `metadata`.
+- Retrieval no-hit behavior: return empty evidence list and a missing-info note; do not fabricate evidence.
 - Output from answer builder: final answer, cited evidence ids, risk note, missing-info note.
 - Output from evaluation: accuracy, grounding quality, compliance miss rate, trend freshness hit rate.
 

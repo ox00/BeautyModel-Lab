@@ -60,6 +60,17 @@ class ReviewFeedback(BaseModel):
     issue_tags: Optional[str] = None
     created_at: Optional[str] = None
 
+class ReviewFeedbackRaw(BaseModel):
+    review_id: str
+    product_id: str
+    source: Optional[str] = None
+    rating_bucket: Optional[str] = None
+    sentiment_tag: Optional[str] = None
+    effect_tags: Optional[str] = None
+    issue_tags: Optional[str] = None
+    content: Optional[str] = None
+    created_at: Optional[str] = None
+
 class TrendSignal(BaseModel):
     trend_id: str
     keyword: str
