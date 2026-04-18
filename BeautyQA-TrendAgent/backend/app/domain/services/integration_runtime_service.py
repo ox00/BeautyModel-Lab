@@ -547,7 +547,10 @@ class IntegrationRuntimeService:
             )
         lines.extend(["", "## Task Results"])
         for item in report["task_results"]:
+            cleaned_count = item.get("cleaned_count", 0)
+            signal_count = item.get("signal_count", 0)
+            error = item.get("error", "")
             lines.append(
-                f"- task `{item['task_id']}` `{item['platform']}` `{item['keyword']}` success=`{str(item['success']).lower()}` cleaned=`{item['cleaned_count']}` signals=`{item['signal_count']}` error=`{item['error']}`"
+                f"- task `{item['task_id']}` `{item['platform']}` `{item['keyword']}` success=`{str(item['success']).lower()}` cleaned=`{cleaned_count}` signals=`{signal_count}` error=`{error}`"
             )
         return "\n".join(lines) + "\n"

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # Only fetch posts from the last 12 months (time is millisecond timestamp)
 RAW_DATA_QUERIES = {
     "xhs": "SELECT note_id as source_id, title, \"desc\", 'note' as source_type, liked_count, collected_count, comment_count, share_count, source_keyword FROM xhs_note WHERE source_keyword = :keyword AND time >= :time_threshold",
-    "dy": "SELECT aweme_id as source_id, title, \"desc\", 'video' as source_type, liked_count, '' as collected_count, comment_count, share_count, source_keyword FROM douyin_aweme WHERE source_keyword = :keyword AND create_time >= :time_threshold",
+    "dy": "SELECT aweme_id as source_id, title, \"desc\", 'video' as source_type, liked_count, '' as collected_count, comment_count, share_count, source_keyword FROM douyin_aweme WHERE source_keyword = :keyword AND create_time >= :time_threshold_sec",
     "bili": "SELECT video_id as source_id, title, \"desc\" as description, 'video' as source_type, liked_count, video_favorite_count as collected_count, video_comment as comment_count, video_share_count as share_count, source_keyword FROM bilibili_video WHERE source_keyword = :keyword AND created_at >= :time_threshold_str",
     "wb": "SELECT note_id as source_id, '' as title, content as \"desc\", 'note' as source_type, liked_count, '' as collected_count, comments_count as comment_count, shared_count as share_count, source_keyword FROM weibo_note WHERE source_keyword = :keyword",
 }
@@ -139,13 +139,19 @@ class CleaningAgent(BaseAgent):
         from datetime import datetime, timedelta
         twelve_months_ago = datetime.now() - timedelta(days=365)
         time_threshold_ms = int(twelve_months_ago.timestamp() * 1000)
+        time_threshold_sec = int(twelve_months_ago.timestamp())
         time_threshold_str = twelve_months_ago.strftime("%Y-%m-%d")
 
         from sqlalchemy import text
         async with async_session_factory() as session:
             result = await session.execute(
                 text(query),
-                {"keyword": keyword, "time_threshold": time_threshold_ms, "time_threshold_str": time_threshold_str},
+                {
+                    "keyword": keyword,
+                    "time_threshold": time_threshold_ms,
+                    "time_threshold_sec": time_threshold_sec,
+                    "time_threshold_str": time_threshold_str,
+                },
             )
             rows = result.mappings().all()
             if isinstance(max_raw_items, int) and max_raw_items > 0:
