@@ -10,6 +10,10 @@ from app.infrastructure.database.models import (  # noqa: F401 - ensure models a
     CleanedTrendData,
     CrawlTask,
     CrawlTaskLog,
+    ExpansionRegistry,
+    QueryScheduleState,
+    RuntimeBatchRun,
+    RuntimeBatchRunEvent,
     TrendKeyword,
 )
 

@@ -10,9 +10,11 @@ from openai import AsyncOpenAI
 from app.agents.base import BaseAgent, AgentContext, AgentResult
 from app.config.settings import settings
 from app.domain.services.keyword_expansion_service import (
+    PLATFORM_LABEL_TO_CODE,
     build_keyword_execution_plan,
     parse_query_variants,
 )
+from app.domain.services.runtime_query_state_service import infer_watchlist_tier
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +127,7 @@ class KeywordExpanderAgent(BaseAgent):
                     llm_supplements[platform] = await self._expand_keyword(keyword_meta, platform)
 
             plan = build_keyword_execution_plan(keyword_meta, llm_supplements=llm_supplements)
+            plan["registry_rows"] = self._build_registry_rows(keyword_meta, plan)
 
             logger.info(
                 "[%s] Built execution plan for '%s': %s crawl targets, %s reference sources, %s task candidates",
@@ -138,7 +141,45 @@ class KeywordExpanderAgent(BaseAgent):
         except Exception as e:
             logger.error("[%s] Keyword planning failed for '%s': %s", self.name, keyword, e)
             fallback = build_keyword_execution_plan(keyword_meta)
+            fallback["registry_rows"] = self._build_registry_rows(keyword_meta, fallback)
             return AgentResult(success=True, data=fallback)
+
+    @staticmethod
+    def _build_registry_rows(keyword_meta: dict[str, Any], plan: dict[str, Any]) -> list[dict[str, Any]]:
+        """Build first-party expansion registry rows from planned candidates.
+
+        Policy:
+        - seed/seed_variant/rule-based rows => approved
+        - llm_supplement => candidate (needs approval first)
+        """
+        rows: list[dict[str, Any]] = []
+        tier = infer_watchlist_tier(
+            str(keyword_meta.get("priority", "medium")),
+            str(keyword_meta.get("crawl_goal", "trend_discovery")),
+        )
+        ttl_days = 14 if tier == "watchlist-hot" else 30 if tier == "watchlist-normal" else 60
+        for candidate in plan.get("task_candidates", []):
+            expansion_type = candidate.get("expansion_type", "seed")
+            is_candidate = expansion_type == "llm_supplement"
+            status = "candidate" if is_candidate else "approved"
+            review_status = "pending" if is_candidate else "approved"
+            source_type = "llm" if is_candidate else "manual"
+            platform_label = candidate.get("platform", "")
+            rows.append(
+                {
+                    "platform": platform_label,
+                    "platform_code": PLATFORM_LABEL_TO_CODE.get(platform_label, platform_label),
+                    "expanded_query": candidate.get("expanded_query", ""),
+                    "expansion_type": expansion_type,
+                    "based_on": candidate.get("based_on", ""),
+                    "source_type": source_type,
+                    "review_status": review_status,
+                    "status": status,
+                    "ttl_days": ttl_days,
+                    "notes": "auto-ingested from keyword planner",
+                }
+            )
+        return rows
 
     async def _expand_keyword(
         self,

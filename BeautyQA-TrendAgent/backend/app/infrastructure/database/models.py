@@ -106,6 +106,59 @@ class CrawlTaskLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
 
+class ExpansionRegistry(Base):
+    """First-party expansion registry for approved/candidate/deprecated queries."""
+
+    __tablename__ = "expansion_registry"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    keyword_db_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True, comment="FK-like link to trend_keywords.id")
+    keyword_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True, comment="Business keyword ID, e.g. KW_0001")
+    normalized_keyword: Mapped[str] = mapped_column(String(255), nullable=False, index=True, comment="Normalized keyword")
+    platform: Mapped[str] = mapped_column(String(32), nullable=False, index=True, comment="Platform label, e.g. xiaohongshu/douyin")
+    expanded_query: Mapped[str] = mapped_column(String(255), nullable=False, index=True, comment="Expanded query text")
+    expansion_type: Mapped[str] = mapped_column(String(32), nullable=False, default="seed", comment="seed/seed_variant/domain_constraint/llm_supplement/etc.")
+    based_on: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="Base term used to derive this expansion")
+    source_type: Mapped[str] = mapped_column(String(32), nullable=False, default="manual", comment="manual/llm/mined_from_data")
+    review_status: Mapped[str] = mapped_column(String(16), nullable=False, default="approved", comment="pending/approved/rejected")
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="approved", comment="approved/candidate/deprecated")
+    ttl_days: Mapped[int] = mapped_column(Integer, nullable=False, default=30, comment="Suggested refresh TTL in days")
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Optional expiry time")
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), comment="Last ingestion/refresh time")
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, comment="Whether this expansion remains active")
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Operator notes")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+
+
+class QueryScheduleState(Base):
+    """Persistent schedule state for query_unit = normalized_keyword + platform + expanded_query."""
+
+    __tablename__ = "query_schedule_states"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    query_unit_key: Mapped[str] = mapped_column(String(512), nullable=False, unique=True, index=True, comment="normalized_keyword + platform + expanded_query")
+    keyword_db_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True, comment="FK-like link to trend_keywords.id")
+    keyword_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True, comment="Business keyword ID, e.g. KW_0001")
+    normalized_keyword: Mapped[str] = mapped_column(String(255), nullable=False, index=True, comment="Normalized keyword")
+    platform: Mapped[str] = mapped_column(String(32), nullable=False, index=True, comment="Platform code for scheduler/crawler")
+    expanded_query: Mapped[str] = mapped_column(String(255), nullable=False, index=True, comment="Expanded query text")
+    tier: Mapped[str] = mapped_column(String(32), nullable=False, default="watchlist-normal", comment="watchlist-hot/watchlist-normal/discovery")
+    risk_level: Mapped[str] = mapped_column(String(16), nullable=False, default="low", comment="low/medium/high")
+    min_revisit_interval_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=1440, comment="Min revisit interval in minutes")
+    retry_cooldown_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=1440, comment="Retry cooldown after failure in minutes")
+    next_due_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True, comment="Next eligible schedule time")
+    last_scheduled_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Last scheduling time")
+    last_success_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Last successful pipeline completion")
+    last_failed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Last failed pipeline completion")
+    last_task_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, comment="Last related crawl task id")
+    last_task_status: Mapped[Optional[str]] = mapped_column(String(16), nullable=True, comment="scheduled/completed/failed")
+    failure_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="Consecutive failure count")
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, comment="Whether this query unit is schedulable")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+
+
 class RuntimeBatchRun(Base):
     """First-party runtime batch execution record for audit and replay."""
 

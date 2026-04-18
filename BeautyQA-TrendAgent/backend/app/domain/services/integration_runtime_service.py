@@ -17,6 +17,7 @@ from app.config.settings import settings
 from app.domain.services.account_service import AccountService
 from app.domain.services.runtime_batch_service import RuntimeBatchService
 from app.domain.services.runtime_policy_service import DEFAULT_RUNTIME_PROFILE, resolve_runtime_policy
+from app.domain.services.runtime_query_state_service import RuntimeQueryStateService
 from app.domain.services.keyword_service import KeywordService
 from app.domain.services.task_service import TaskService
 from app.infrastructure.crawler.adapter import CrawlerAdapter
@@ -456,6 +457,11 @@ class IntegrationRuntimeService:
                     platform=task.platform,
                 )
             )
+            if not result.success:
+                task_orm = await TaskRepositoryImpl(session).get_by_id(task.id)
+                if task_orm:
+                    query_state_service = RuntimeQueryStateService(session)
+                    await query_state_service.mark_task_failure(task_orm.config or {})
             await session.commit()
 
             return {
@@ -492,12 +498,20 @@ class IntegrationRuntimeService:
 
             if success:
                 await keyword_service.mark_crawled(keyword_id)
+                task = await task_service.get_task(task_id)
+                if task:
+                    query_state_service = RuntimeQueryStateService(session)
+                    await query_state_service.mark_task_success(task.config or {})
                 await task_service.add_log(
                     task_id,
                     "success",
                     f"INT-002 pipeline completed. cleaned_count={cleaned_count}, signal_count={signal_result['signal_count']}",
                 )
             else:
+                task = await task_service.get_task(task_id)
+                if task:
+                    query_state_service = RuntimeQueryStateService(session)
+                    await query_state_service.mark_task_failure(task.config or {})
                 await task_service.mark_failed(task_id, error_message or "postprocess_failed")
             await session.commit()
 

@@ -7,6 +7,7 @@ from app.tasks.celery_app import celery_app
 from app.agents.base import AgentContext
 from app.agents.crawler_agent import CrawlerAgent
 from app.domain.services.account_service import AccountService
+from app.domain.services.runtime_query_state_service import RuntimeQueryStateService
 from app.domain.services.task_service import TaskService
 from app.infrastructure.crawler.adapter import CrawlerAdapter
 from app.infrastructure.database.connection import async_session_factory
@@ -64,6 +65,12 @@ async def _crawl_platform_async(celery_task, task_id: int) -> dict:
         )
 
         result = await crawler_agent.execute(context)
+
+        if not result.success:
+            task_orm_for_state = await task_repo.get_by_id(task_id)
+            if task_orm_for_state:
+                query_state_service = RuntimeQueryStateService(session)
+                await query_state_service.mark_task_failure(task_orm_for_state.config or {})
 
         # Update celery task ID in DB
         if task_id:

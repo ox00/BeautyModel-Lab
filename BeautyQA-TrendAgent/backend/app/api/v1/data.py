@@ -25,6 +25,19 @@ def _normalize_platform_filter(platform: str) -> str:
     return mapping.get(platform, platform)
 
 
+def _load_handoff_signals() -> list[dict]:
+    handoff_file = Path(settings.TREND_SIGNAL_HANDOFF_DIR) / "current" / "trend_signal_latest.json"
+    if not handoff_file.exists():
+        return []
+    try:
+        payload = json.loads(handoff_file.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return []
+
+    results = payload.get("results", [])
+    return results if isinstance(results, list) else []
+
+
 @router.get("/cleaned", response_model=list[TrendDataRead])
 async def query_cleaned_data(
     keyword: Optional[str] = None,
@@ -89,12 +102,27 @@ async def export_trend_signals(
     limit: int = Query(default=100, ge=1, le=500),
 ):
     """Export first-party trend_signal records for downstream retrieval."""
+    handoff_signals = _load_handoff_signals()
+    normalized_platform = _normalize_platform_filter(platform) if platform else None
+    if handoff_signals:
+        selected = []
+        for signal in handoff_signals:
+            if not isinstance(signal, dict):
+                continue
+            if normalized_keyword and signal.get("normalized_keyword") != normalized_keyword:
+                continue
+            if normalized_platform and signal.get("source_platform") != normalized_platform:
+                continue
+            selected.append(signal)
+            if len(selected) >= limit:
+                break
+        return {"count": len(selected), "results": selected, "source": "handoff_current"}
+
     base_dir = Path(settings.DATA_DIR) / "trend_signal"
     if not base_dir.exists():
         return {"count": 0, "results": []}
 
     pattern = "*.json"
-    normalized_platform = _normalize_platform_filter(platform) if platform else None
 
     if platform:
         search_dir = base_dir / platform
@@ -126,4 +154,4 @@ async def export_trend_signals(
         if len(selected) >= limit:
             break
 
-    return {"count": len(selected), "results": selected}
+    return {"count": len(selected), "results": selected, "source": "task_json_legacy"}

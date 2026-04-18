@@ -8,6 +8,7 @@ from app.agents.base import AgentContext
 from app.agents.cleaning_agent import CleaningAgent
 from app.agents.signal_agent import SignalAgent
 from app.domain.services.keyword_service import KeywordService
+from app.domain.services.runtime_query_state_service import RuntimeQueryStateService
 from app.domain.services.task_service import TaskService
 from app.infrastructure.database.connection import async_session_factory
 from app.infrastructure.repositories.keyword_repo_impl import KeywordRepositoryImpl
@@ -102,6 +103,13 @@ async def _process_trend_data_async(crawl_result: dict) -> dict:
 
     except Exception as e:
         logger.error(f"[process_trend_data] Cleaning failed for task {task_id}: {e}")
+        await _finalize_task_record(
+            task_id=task_id,
+            cleaned_count=0,
+            signal_result={"success": False, "signal_count": 0, "error": "postprocess_exception"},
+            success=False,
+            error_message=str(e),
+        )
         return {"task_id": task_id, "success": False, "error": str(e)}
 
 
@@ -134,12 +142,16 @@ async def _finalize_task_record(
 
         if success:
             await keyword_service.mark_crawled(task.keyword_id)
+            query_state_service = RuntimeQueryStateService(session)
+            await query_state_service.mark_task_success(task.config or {})
             await task_service.add_log(
                 task_id,
                 "success",
                 f"Post-processing completed. cleaned_count={cleaned_count}, signal_count={signal_result['signal_count']}",
             )
         else:
+            query_state_service = RuntimeQueryStateService(session)
+            await query_state_service.mark_task_failure(task.config or {})
             await task_service.mark_failed(task_id, error_message or "postprocess_failed")
 
         await session.commit()

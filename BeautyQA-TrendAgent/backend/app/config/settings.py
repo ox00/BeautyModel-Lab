@@ -7,8 +7,11 @@ class Settings(BaseSettings):
 
     # Project paths (settings.py is at backend/app/config/settings.py)
     PROJECT_ROOT: str = str(Path(__file__).resolve().parents[2])  # -> backend/
+    REPO_ROOT: str = str(Path(__file__).resolve().parents[4])  # -> repo root/
     CONFIG_DIR: str = str(Path(__file__).resolve().parents[2] / "config")  # -> backend/config/
     DATA_DIR: str = str(Path(__file__).resolve().parents[2] / "data")  # -> backend/data/
+    SHARED_DATA_DIR: str = str(Path(__file__).resolve().parents[4] / "data")  # -> repo/data/
+    TREND_SIGNAL_HANDOFF_DIR: str = str(Path(__file__).resolve().parents[4] / "data" / "handoff" / "trend_signal")
 
     # Keyword CSV path
     TREND_KEYWORD_CSV: str = str(Path(__file__).resolve().parents[2] / "config" / "trend-keyword.csv")
