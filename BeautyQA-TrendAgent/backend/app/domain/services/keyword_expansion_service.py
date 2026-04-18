@@ -31,18 +31,23 @@ PLATFORM_CODE_TO_LABEL = {
 
 REFERENCE_SOURCES = {"taobao", "industry_news"}
 
+DEFAULT_RUNTIME_CRAWL_TARGETS = ["xiaohongshu", "douyin", "bilibili"]
+
 GOAL_SUFFIXES: dict[str, dict[str, list[tuple[str, str]]]] = {
     "trend_discovery": {
         "xiaohongshu": [("domain_constraint", "护肤"), ("scenario_binding", "趋势")],
         "douyin": [("platform_style", "趋势"), ("domain_constraint", "成分")],
+        "bilibili": [("platform_style", "教程"), ("platform_style", "科普")],
     },
     "market_validation": {
         "xiaohongshu": [("platform_style", "测评"), ("category_binding", "推荐")],
         "douyin": [("platform_style", "推荐"), ("category_binding", "热度")],
+        "bilibili": [("platform_style", "测评"), ("platform_style", "推荐")],
     },
     "risk_monitoring": {
         "xiaohongshu": [("risk_probe", "风险"), ("risk_probe", "避雷"), ("risk_probe", "副作用")],
         "douyin": [("risk_probe", "风险"), ("risk_probe", "翻车"), ("risk_probe", "避雷")],
+        "bilibili": [("risk_probe", "避雷"), ("risk_probe", "副作用"), ("risk_probe", "风险")],
     },
 }
 
@@ -50,22 +55,27 @@ TREND_TYPE_SUFFIXES: dict[str, dict[str, list[tuple[str, str]]]] = {
     "ingredient": {
         "xiaohongshu": [("domain_constraint", "护肤"), ("category_binding", "成分")],
         "douyin": [("domain_constraint", "成分"), ("category_binding", "原料")],
+        "bilibili": [("domain_constraint", "成分"), ("platform_style", "科普")],
     },
     "claim": {
         "xiaohongshu": [("domain_constraint", "功效"), ("platform_style", "护肤")],
         "douyin": [("platform_style", "功效"), ("platform_style", "推荐")],
+        "bilibili": [("platform_style", "功效"), ("platform_style", "实测")],
     },
     "category": {
         "xiaohongshu": [("platform_style", "测评"), ("category_binding", "推荐")],
         "douyin": [("platform_style", "推荐"), ("platform_style", "热度")],
+        "bilibili": [("platform_style", "测评"), ("platform_style", "合集")],
     },
     "scenario": {
         "xiaohongshu": [("scenario_binding", "护肤"), ("scenario_binding", "场景")],
         "douyin": [("platform_style", "热门"), ("scenario_binding", "分享")],
+        "bilibili": [("scenario_binding", "教程"), ("scenario_binding", "干货")],
     },
     "risk_compliance": {
         "xiaohongshu": [("risk_probe", "风险"), ("risk_probe", "避雷")],
         "douyin": [("risk_probe", "风险"), ("risk_probe", "翻车")],
+        "bilibili": [("risk_probe", "避雷"), ("risk_probe", "副作用")],
     },
 }
 
@@ -153,6 +163,24 @@ def split_execution_sources(platforms: str | Iterable[str] | None) -> dict[str, 
         "crawl_targets": crawl_targets,
         "reference_sources": reference_sources,
         "unsupported_sources": unsupported_sources,
+    }
+
+
+def merge_runtime_platform_scope(
+    base_platforms: str | Iterable[str] | None,
+    crawl_target_override: str | Iterable[str] | None,
+) -> dict[str, list[str]]:
+    base_split = split_execution_sources(base_platforms)
+    if crawl_target_override is None:
+        return base_split
+
+    override_split = split_execution_sources(crawl_target_override)
+    return {
+        "crawl_targets": override_split["crawl_targets"],
+        "reference_sources": base_split["reference_sources"],
+        "unsupported_sources": _unique_strings(
+            [*base_split["unsupported_sources"], *override_split["unsupported_sources"]]
+        ),
     }
 
 
@@ -259,8 +287,12 @@ def build_keyword_execution_plan(
     keyword_meta: dict[str, Any],
     *,
     llm_supplements: dict[str, list[str]] | None = None,
+    platform_scope_override: str | Iterable[str] | None = None,
 ) -> dict[str, Any]:
-    source_split = split_execution_sources(keyword_meta.get("suggested_platforms"))
+    source_split = merge_runtime_platform_scope(
+        keyword_meta.get("suggested_platforms"),
+        platform_scope_override,
+    )
     crawl_targets = source_split["crawl_targets"]
     reference_sources = source_split["reference_sources"]
     unsupported_sources = source_split["unsupported_sources"]

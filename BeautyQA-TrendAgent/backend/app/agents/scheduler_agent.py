@@ -18,6 +18,12 @@ from app.infrastructure.database.connection import async_session_factory
 logger = logging.getLogger(__name__)
 
 
+def _int_with_default(value: int | None, default: int) -> int:
+    if value is None:
+        return default
+    return int(value)
+
+
 class SchedulerAgent(BaseAgent):
     """Create platform-aware crawl tasks from structured keyword plans."""
 
@@ -48,8 +54,8 @@ class SchedulerAgent(BaseAgent):
             target_platform = normalize_due_platform(context.platform or None)
             task_config_overrides = context.extra.get("task_config_overrides", {})
             max_tasks_per_keyword = context.extra.get("max_tasks_per_keyword")
-            dedup_window_hours = int(context.extra.get("dedup_window_hours", 168) or 168)
-            retry_cooldown_hours = int(context.extra.get("retry_cooldown_hours", 24) or 24)
+            dedup_window_hours = _int_with_default(context.extra.get("dedup_window_hours"), 168)
+            retry_cooldown_hours = _int_with_default(context.extra.get("retry_cooldown_hours"), 24)
 
             for kw_data in due_keywords:
                 keyword_id = kw_data["id"]

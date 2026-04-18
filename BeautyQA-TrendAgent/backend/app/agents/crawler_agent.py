@@ -4,6 +4,7 @@ import logging
 from typing import Optional
 
 from app.agents.base import BaseAgent, AgentContext, AgentResult
+from app.domain.services.account_runtime import is_local_browser_state_account
 from app.infrastructure.crawler.adapter import CrawlerAdapter, CrawlRequest
 from app.domain.services.account_service import AccountService
 from app.domain.services.task_service import TaskService
@@ -66,7 +67,17 @@ class CrawlerAgent(BaseAgent):
 
             if account:
                 login_type = task_config.get("login_type", account.login_type)
-                cookies = account.cookies
+                if is_local_browser_state_account(account.cookies):
+                    cookies = ""
+                    logger.info(
+                        "[%s] Task %s is using managed local browser state account %s for %s",
+                        self.name,
+                        task_id,
+                        account.id,
+                        platform,
+                    )
+                else:
+                    cookies = account.cookies
                 account_id: Optional[int] = account.id
             else:
                 login_type = task_config.get("login_type", "cookie")

@@ -16,6 +16,7 @@ The project should treat:
 - `BeautyQA-TrendAgent/backend/.env` as the single source of truth for runtime DB config
 - `scripts/run_mediacrawler.sh` as the standard manual entrypoint for vendor crawler smoke tests
 - `scripts/run_platform_smoke.sh` as the fast smoke entrypoint for common team usage
+- `scripts/bootstrap_runtime_accounts.py` as the standard bridge from vendor login-state reuse into first-party account governance
 - `docs/19-trendagent-runtime-strategy.md` as the first-party runtime safety policy
 
 ## Fast smoke entrypoint
@@ -52,6 +53,42 @@ What the wrapper does:
 
 Use `scripts/run_mediacrawler.sh` when you need full low-level control.
 Use `scripts/run_platform_smoke.sh` when you just want to smoke one or more common platforms quickly.
+
+## First-party account bootstrap
+
+`safe_live` should use a first-party `accounts` row, not an implicit local fallback.
+
+Standard bootstrap command:
+
+```bash
+./.venv/bin/python scripts/bootstrap_runtime_accounts.py
+```
+
+Platform-scoped bootstrap:
+
+```bash
+./.venv/bin/python scripts/bootstrap_runtime_accounts.py --platform bili
+./.venv/bin/python scripts/bootstrap_runtime_accounts.py --platform xhs dy bili
+```
+
+Dry run:
+
+```bash
+./.venv/bin/python scripts/bootstrap_runtime_accounts.py --dry-run
+```
+
+What this does:
+
+- scans `BeautyQA-vendor/MediaCrawler/browser_data/*_user_data_dir`
+- creates or updates a first-party account row per available platform
+- marks that row as a managed local browser-state account
+- lets `safe_live` reuse the vendor persistent browser context without relying on ad hoc runtime fallback
+
+Quick SQL check:
+
+```bash
+PGPASSWORD=123456 psql -h localhost -p 5433 -U postgres -d media_crawler -c "select id, platform, login_type, status, usage_count, remark from accounts order by id;"
+```
 
 ## Shared environment baseline
 

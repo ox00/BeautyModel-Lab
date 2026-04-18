@@ -117,16 +117,24 @@ class KeywordExpanderAgent(BaseAgent):
             "report_id": context.extra.get("report_id", ""),
             "notes": context.extra.get("notes", ""),
         }
+        platform_scope_override = context.extra.get("platform_scope_override")
 
         try:
-            baseline_plan = build_keyword_execution_plan(keyword_meta)
+            baseline_plan = build_keyword_execution_plan(
+                keyword_meta,
+                platform_scope_override=platform_scope_override,
+            )
             llm_supplements: dict[str, list[str]] = {}
 
             if context.extra.get("enable_llm", True):
                 for platform in baseline_plan["crawl_targets"]:
                     llm_supplements[platform] = await self._expand_keyword(keyword_meta, platform)
 
-            plan = build_keyword_execution_plan(keyword_meta, llm_supplements=llm_supplements)
+            plan = build_keyword_execution_plan(
+                keyword_meta,
+                llm_supplements=llm_supplements,
+                platform_scope_override=platform_scope_override,
+            )
             plan["registry_rows"] = self._build_registry_rows(keyword_meta, plan)
 
             logger.info(
@@ -140,7 +148,10 @@ class KeywordExpanderAgent(BaseAgent):
             return AgentResult(success=True, data=plan)
         except Exception as e:
             logger.error("[%s] Keyword planning failed for '%s': %s", self.name, keyword, e)
-            fallback = build_keyword_execution_plan(keyword_meta)
+            fallback = build_keyword_execution_plan(
+                keyword_meta,
+                platform_scope_override=platform_scope_override,
+            )
             fallback["registry_rows"] = self._build_registry_rows(keyword_meta, fallback)
             return AgentResult(success=True, data=fallback)
 

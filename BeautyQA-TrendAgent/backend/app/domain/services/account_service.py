@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Optional, Sequence
 
 from app.domain.models.account import AccountCreate, AccountUpdate, AccountRead
+from app.domain.services.account_runtime import normalize_account_platform
 from app.infrastructure.database.models import Account
 from app.infrastructure.repositories.account_repo_impl import AccountRepositoryImpl
 
@@ -19,7 +20,7 @@ class AccountService:
 
     async def create_account(self, data: AccountCreate) -> AccountRead:
         account = Account(
-            platform=data.platform,
+            platform=normalize_account_platform(data.platform),
             cookies=data.cookies,
             login_type=data.login_type,
             rotation_strategy=data.rotation_strategy,
@@ -53,12 +54,12 @@ class AccountService:
         return AccountRead.model_validate(account) if account else None
 
     async def list_accounts(self, platform: str, status: Optional[str] = None) -> list[AccountRead]:
-        accounts = await self._repo.list_by_platform(platform, status)
+        accounts = await self._repo.list_by_platform(normalize_account_platform(platform), status)
         return [AccountRead.model_validate(a) for a in accounts]
 
     async def pick_account_for_crawl(self, platform: str) -> Optional[Account]:
         """Pick the best available account for a crawl task using rotation strategy."""
-        active_accounts = await self._repo.list_active(platform)
+        active_accounts = await self._repo.list_active(normalize_account_platform(platform))
         if not active_accounts:
             return None
 

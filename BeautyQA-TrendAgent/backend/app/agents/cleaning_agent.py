@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 RAW_DATA_QUERIES = {
     "xhs": "SELECT note_id as source_id, title, \"desc\", 'note' as source_type, liked_count, collected_count, comment_count, share_count, source_keyword FROM xhs_note WHERE source_keyword = :keyword AND time >= :time_threshold",
     "dy": "SELECT aweme_id as source_id, title, \"desc\", 'video' as source_type, liked_count, '' as collected_count, comment_count, share_count, source_keyword FROM douyin_aweme WHERE source_keyword = :keyword AND create_time >= :time_threshold_sec",
-    "bili": "SELECT video_id as source_id, title, \"desc\" as description, 'video' as source_type, liked_count, video_favorite_count as collected_count, video_comment as comment_count, video_share_count as share_count, source_keyword FROM bilibili_video WHERE source_keyword = :keyword AND created_at >= :time_threshold_str",
+    "bili": "SELECT video_id as source_id, title, \"desc\" as description, 'video' as source_type, liked_count, video_favorite_count as collected_count, video_comment as comment_count, video_share_count as share_count, source_keyword FROM bilibili_video WHERE source_keyword = :keyword AND create_time >= :time_threshold_sec",
     "wb": "SELECT note_id as source_id, '' as title, content as \"desc\", 'note' as source_type, liked_count, '' as collected_count, comments_count as comment_count, shared_count as share_count, source_keyword FROM weibo_note WHERE source_keyword = :keyword",
 }
 

@@ -21,6 +21,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--runtime-profile", choices=["safe_live", "debug_fast"], default="safe_live")
     parser.add_argument("--trigger-source", default="manual")
+    parser.add_argument("--due-keyword-id", nargs="+", type=int, help="Optional keyword DB ids to run explicitly")
     parser.add_argument(
         "--platform",
         nargs="+",
@@ -50,6 +51,7 @@ async def _main(args: argparse.Namespace) -> dict:
         platforms=args.platform,
         runtime_profile=args.runtime_profile,
         trigger_source=args.trigger_source,
+        due_keyword_ids=args.due_keyword_id,
         per_platform_limit=args.per_platform_limit,
         bootstrap_keywords_from_csv=not args.no_bootstrap_keywords,
         login_type=args.login_type,

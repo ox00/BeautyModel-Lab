@@ -57,6 +57,7 @@ class IntegrationRuntimeService:
         platforms: list[str],
         runtime_profile: str = DEFAULT_RUNTIME_PROFILE,
         trigger_source: str = "manual",
+        due_keyword_ids: list[int] | None = None,
         per_platform_limit: int | None = None,
         bootstrap_keywords_from_csv: bool = True,
         login_type: str | None = None,
@@ -79,6 +80,7 @@ class IntegrationRuntimeService:
         requested_options = {
             "runtime_profile": runtime_profile,
             "trigger_source": trigger_source,
+            "due_keyword_ids": due_keyword_ids or [],
             "per_platform_limit": per_platform_limit,
             "bootstrap_keywords_from_csv": bootstrap_keywords_from_csv,
             "login_type": login_type,
@@ -128,6 +130,7 @@ class IntegrationRuntimeService:
                 schedule_result = await self._schedule_platform(
                     platform=platform,
                     effective_policy=effective_policy,
+                    due_keyword_ids=due_keyword_ids,
                 )
                 platform_summaries.append(schedule_result["summary"])
                 await self._record_keyword_events(batch_run["id"], run_id, schedule_result["keyword_events"])
@@ -317,16 +320,25 @@ class IntegrationRuntimeService:
         *,
         platform: str,
         effective_policy: dict[str, Any],
+        due_keyword_ids: list[int] | None = None,
     ) -> dict[str, Any]:
         async with async_session_factory() as session:
             keyword_service = KeywordService(KeywordRepositoryImpl(session))
             task_service = TaskService(TaskRepositoryImpl(session))
 
-            trend_agent = TrendAgent(keyword_service)
-            trend_result = await trend_agent.execute(AgentContext(platform=platform))
-            due_keywords = trend_result.data.get("due_keywords", []) if trend_result.success else []
-            per_platform_limit = int(effective_policy["per_platform_limit"])
-            selected_due_keywords = due_keywords[:per_platform_limit] if per_platform_limit > 0 else due_keywords
+            if due_keyword_ids:
+                due_keywords = []
+                for keyword_id in due_keyword_ids:
+                    keyword = await keyword_service.get_keyword(int(keyword_id))
+                    if keyword:
+                        due_keywords.append(keyword.model_dump())
+                selected_due_keywords = due_keywords
+            else:
+                trend_agent = TrendAgent(keyword_service)
+                trend_result = await trend_agent.execute(AgentContext(platform=platform))
+                due_keywords = trend_result.data.get("due_keywords", []) if trend_result.success else []
+                per_platform_limit = int(effective_policy["per_platform_limit"])
+                selected_due_keywords = due_keywords[:per_platform_limit] if per_platform_limit > 0 else due_keywords
             task_config_overrides = {
                 "login_type": effective_policy["login_type"],
                 "headless": effective_policy["headless"],
@@ -360,6 +372,7 @@ class IntegrationRuntimeService:
                 "summary": {
                     "platform": platform,
                     "runtime_profile": effective_policy["profile_name"],
+                    "manual_due_keyword_ids": due_keyword_ids or [],
                     "due_keyword_count": len(due_keywords),
                     "selected_due_keyword_count": len(selected_due_keywords),
                     "scheduled_task_count": len(scheduled_tasks),
