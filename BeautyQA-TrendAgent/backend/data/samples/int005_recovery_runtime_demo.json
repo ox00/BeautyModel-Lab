@@ -1,0 +1,17 @@
+{
+  "run_id": "int005_demo_recovery_20260418",
+  "reconcile_actions": [
+    {
+      "query_unit_key": "发酵赋能__xhs__发酵赋能 护肤",
+      "action": "requeue_planned"
+    }
+  ],
+  "completion_audit": {
+    "completion_classification": "failed",
+    "total_items": 3,
+    "succeeded_items": 1,
+    "failed_retryable_items": 1,
+    "failed_terminal_items": 0,
+    "running_items": 1
+  }
+}

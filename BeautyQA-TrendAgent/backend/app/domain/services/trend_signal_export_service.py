@@ -60,6 +60,10 @@ def _stable_sort_key(signal: dict[str, Any]) -> tuple[str, str, str]:
     )
 
 
+def _build_export_run_id() -> str:
+    return datetime.now(timezone.utc).strftime("int003_%Y%m%d_%H%M%S_%f")
+
+
 def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with NamedTemporaryFile("w", delete=False, dir=path.parent, encoding="utf-8") as tmp:
@@ -95,7 +99,7 @@ class TrendSignalExportService:
         trigger_source: str = "manual",
         source_run_ids: list[str] | None = None,
     ) -> dict[str, Any]:
-        export_run_id = datetime.now(timezone.utc).strftime("int003_%Y%m%d_%H%M%S")
+        export_run_id = _build_export_run_id()
         requested_options = {
             "source_run_ids": source_run_ids or [],
             "handoff_root": str(self._handoff_root),
@@ -104,7 +108,11 @@ class TrendSignalExportService:
 
         try:
             source_runs, source_events = await self._load_source_runtime_events(source_run_ids)
-            source_files, source_mode = self._extract_signal_output_files(source_runs, source_events)
+            source_files, source_mode = self._extract_signal_output_files(
+                source_runs,
+                source_events,
+                source_run_ids=source_run_ids,
+            )
             if not source_files:
                 raise RuntimeError("No eligible trend_signal source files found from completed runtime batches")
 
@@ -234,6 +242,14 @@ class TrendSignalExportService:
             if source_run_ids:
                 run_stmt = run_stmt.where(RuntimeBatchRun.run_id.in_(source_run_ids))
             runs = list((await session.execute(run_stmt)).scalars().all())
+            if source_run_ids:
+                matched_run_ids = {run.run_id for run in runs}
+                missing_run_ids = [run_id for run_id in source_run_ids if run_id not in matched_run_ids]
+                if missing_run_ids:
+                    raise RuntimeError(
+                        "Requested source_run_ids were not found as completed int002_runtime runs: "
+                        + ", ".join(missing_run_ids)
+                    )
             if not runs:
                 return [], []
 
@@ -283,6 +299,8 @@ class TrendSignalExportService:
         self,
         source_runs: list[RuntimeBatchRun],
         source_events: list[RuntimeBatchRunEvent],
+        *,
+        source_run_ids: list[str] | None,
     ) -> tuple[list[Path], str]:
         files: list[Path] = []
         seen: set[str] = set()
@@ -332,6 +350,12 @@ class TrendSignalExportService:
 
         if files:
             return files, source_mode
+
+        if source_run_ids:
+            raise RuntimeError(
+                "No eligible trend_signal source files were resolved from the requested source_run_ids: "
+                + ", ".join(source_run_ids)
+            )
 
         legacy_files = sorted((Path(settings.DATA_DIR) / "trend_signal").glob("*/*.json"), reverse=True)
         for path in legacy_files:

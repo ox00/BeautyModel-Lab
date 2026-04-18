@@ -1,0 +1,17 @@
+{
+  "empty_batch_case": {
+    "run_id": "int005_fix_empty_case_20260418",
+    "completion_classification": "completed_full",
+    "batch_status": "completed",
+    "total_items": 0
+  },
+  "retryable_failure_case": {
+    "run_id": "int005_fix_retryable_case_20260418",
+    "completion_classification": "failed",
+    "batch_status": "failed",
+    "total_items": 2,
+    "succeeded_items": 1,
+    "failed_retryable_items": 1,
+    "running_items": 0
+  }
+}

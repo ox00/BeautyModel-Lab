@@ -53,6 +53,8 @@ Implementation runs in separate execution threads so design context and debuggin
 - `30-qacore/QA-001-trend-signal-retrieval-integration.md`
 - `40-integration/INT-001-e2e-smoke-test.md`
 - `40-integration/INT-003-trend-signal-export-cron.md`
+- `40-integration/INT-003-baseline-frozen-seeds.md`
+- `40-integration/INT-003-baseline-regression-checklist.md`
 - `40-integration/INT-004-trend-signal-series-aggregation.md`
 - `40-integration/INT-005-batch-recovery-and-completion-guarantee.md`
 - `50-evaluation/EVAL-001-benchmark-v1.md`
@@ -72,6 +74,7 @@ Use the kickoff docs below when handing work to a separate implementation thread
 - `30-qacore/QA-002-kickoff_cn.md`
 - `30-qacore/QA-003-kickoff_cn.md`
 - `40-integration/INT-001-kickoff_cn.md`
+- `00-governance/runtime-stability-wave-dispatch-board.md`
 - `40-integration/INT-003-kickoff_cn.md`
 - `40-integration/INT-004-kickoff_cn.md`
 - `40-integration/INT-005-kickoff_cn.md`

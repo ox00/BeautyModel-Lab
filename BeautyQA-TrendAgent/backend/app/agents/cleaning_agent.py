@@ -40,6 +40,9 @@ CLEANING_PROMPT = """你是一个专业的内容分析助手。请对以下社�
 请严格按以下JSON格式返回，不要添加其他内容：
 {{"summary": "...", "topics": ["标签1", "标签2"], "sentiment": "positive/negative/neutral", "noise": false}}"""
 
+NEGATIVE_HINTS = ("曝光", "避雷", "风险", "副作用", "骗局", "三无", "虚假", "神药")
+POSITIVE_HINTS = ("推荐", "教程", "干货", "分享", "测评", "好用", "入门")
+
 
 class CleaningAgent(BaseAgent):
     """Agent responsible for AI-powered data cleaning of crawled content.
@@ -186,16 +189,10 @@ class CleaningAgent(BaseAgent):
             )
 
             content = response.choices[0].message.content or "{}"
-            # Strip markdown code block wrappers (e.g. ```json ... ```)
-            content = content.strip()
-            if content.startswith("```"):
-                # Remove opening ```json or ```
-                first_newline = content.index("\n") + 1
-                content = content[first_newline:]
-                # Remove closing ```
-                if content.rstrip().endswith("```"):
-                    content = content.rstrip()[:-3].rstrip()
-            analysis = json.loads(content)
+            analysis = self._parse_analysis(content)
+            if analysis is None:
+                logger.warning(f"[{self.name}] LLM returned invalid JSON, falling back to heuristic summary")
+                analysis = self._build_fallback_analysis(title, desc, keyword)
 
             # Skip noise
             if analysis.get("noise", False):
@@ -225,7 +222,75 @@ class CleaningAgent(BaseAgent):
 
         except (json.JSONDecodeError, Exception) as e:
             logger.warning(f"[{self.name}] LLM analysis failed for item: {e}")
-            return None
+            analysis = self._build_fallback_analysis(title, desc, keyword)
+
+            liked = self._safe_int(item.get("liked_count", "0"))
+            collected = self._safe_int(item.get("collected_count", "0"))
+            comment = self._safe_int(item.get("comment_count", "0"))
+            share = self._safe_int(item.get("share_count", "0"))
+            trend_score = liked * 1.0 + collected * 2.0 + comment * 1.5 + share * 3.0
+
+            return CleanedTrendData(
+                source_type=item.get("source_type", "note"),
+                source_id=str(item.get("source_id", "")),
+                source_platform=platform,
+                keyword=keyword,
+                crawl_task_id=task_id,
+                title=title[:500],
+                summary=analysis.get("summary", ""),
+                topics=",".join(analysis.get("topics", [])),
+                sentiment=analysis.get("sentiment", "neutral"),
+                trend_score=min(trend_score, 10000.0),
+                raw_data=item,
+            )
+
+    @staticmethod
+    def _strip_code_fences(content: str) -> str:
+        content = content.strip()
+        if content.startswith("```"):
+            first_newline = content.find("\n")
+            if first_newline != -1:
+                content = content[first_newline + 1 :]
+            if content.rstrip().endswith("```"):
+                content = content.rstrip()[:-3].rstrip()
+        return content.strip()
+
+    @classmethod
+    def _parse_analysis(cls, content: str) -> Optional[dict]:
+        normalized = cls._strip_code_fences(content)
+        candidates = [normalized]
+
+        first_brace = normalized.find("{")
+        last_brace = normalized.rfind("}")
+        if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+            candidates.append(normalized[first_brace : last_brace + 1])
+
+        for candidate in candidates:
+            try:
+                parsed = json.loads(candidate)
+                if isinstance(parsed, dict):
+                    return parsed
+            except json.JSONDecodeError:
+                continue
+        return None
+
+    @staticmethod
+    def _build_fallback_analysis(title: str, desc: str, keyword: str) -> dict:
+        merged = " ".join(part.strip() for part in (title, desc) if part and part.strip())
+        summary = merged[:150] if merged else keyword
+        sentiment = "neutral"
+        if any(token in merged for token in NEGATIVE_HINTS):
+            sentiment = "negative"
+        elif any(token in merged for token in POSITIVE_HINTS):
+            sentiment = "positive"
+
+        topics = [keyword]
+        return {
+            "summary": summary,
+            "topics": topics,
+            "sentiment": sentiment,
+            "noise": False,
+        }
 
     @staticmethod
     def _safe_int(value) -> int:

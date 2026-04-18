@@ -12,8 +12,10 @@ from app.infrastructure.database.models import (  # noqa: F401 - ensure models a
     CrawlTaskLog,
     ExpansionRegistry,
     QueryScheduleState,
+    RuntimeBatchItem,
     RuntimeBatchRun,
     RuntimeBatchRunEvent,
+    TrendSignalSeries,
     TrendKeyword,
 )
 

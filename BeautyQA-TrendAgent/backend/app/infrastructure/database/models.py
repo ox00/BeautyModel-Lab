@@ -170,6 +170,11 @@ class RuntimeBatchRun(Base):
     trigger_source: Mapped[str] = mapped_column(String(32), nullable=False, default="manual", comment="Trigger source: manual/cron/celery/api")
     profile_name: Mapped[str] = mapped_column(String(32), nullable=False, default="safe_live", comment="Applied runtime profile name")
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="running", comment="Status: running/completed/failed")
+    completion_classification: Mapped[Optional[str]] = mapped_column(
+        String(24),
+        nullable=True,
+        comment="completed_full/completed_partial/failed",
+    )
     platforms: Mapped[Optional[list]] = mapped_column(JSON, nullable=True, comment="Requested platforms for the batch run")
     requested_options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Requested runtime options before policy merge")
     effective_options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Effective runtime policy/options after merge")
@@ -199,6 +204,62 @@ class RuntimeBatchRunEvent(Base):
     payload: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Event payload for audit and replay")
     message: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Short event note")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+
+
+class RuntimeBatchItem(Base):
+    """Execution unit state for recovery and completion audit."""
+
+    __tablename__ = "runtime_batch_items"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    batch_run_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True, comment="FK-like link to runtime_batch_runs.id")
+    run_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True, comment="Stable runtime batch id")
+    query_unit_key: Mapped[str] = mapped_column(String(512), nullable=False, index=True, comment="normalized_keyword + platform + expanded_query")
+    keyword_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, comment="FK-like link to trend_keywords.id")
+    keyword: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, comment="Keyword snapshot")
+    platform: Mapped[str] = mapped_column(String(32), nullable=False, index=True, comment="Target platform code")
+    expanded_query: Mapped[str] = mapped_column(String(255), nullable=False, comment="Expanded query text")
+    query_state_id: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True, comment="FK-like link to query_schedule_states.id")
+    task_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, comment="FK-like link to crawl_tasks.id")
+    item_status: Mapped[str] = mapped_column(
+        String(24),
+        nullable=False,
+        default="planned",
+        comment="planned/dispatched/running/succeeded/failed_retryable/failed_terminal/skipped_duplicate",
+    )
+    retryable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, comment="Whether item can be retried")
+    attempt_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="Total dispatch attempts")
+    last_error: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Last failure reason")
+    last_heartbeat_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Last progress heartbeat")
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, comment="Completion time if terminal")
+    payload: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Planner/runtime metadata snapshot")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+
+
+class TrendSignalSeries(Base):
+    """Bucketed trend signal series for dynamic trend observation."""
+
+    __tablename__ = "trend_signal_series"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    series_key: Mapped[str] = mapped_column(String(512), nullable=False, index=True, comment="normalized_keyword + platform + bucket")
+    bucket_type: Mapped[str] = mapped_column(String(16), nullable=False, index=True, comment="12h/1d")
+    bucket_start: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True, comment="Bucket start time")
+    bucket_end: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="Bucket end time")
+    normalized_keyword: Mapped[str] = mapped_column(String(255), nullable=False, index=True, comment="Normalized keyword")
+    source_platform: Mapped[str] = mapped_column(String(32), nullable=False, index=True, comment="Platform label")
+    support_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, comment="Number of supporting signals")
+    avg_trend_score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0, comment="Average trend score in bucket")
+    delta_vs_prev_bucket: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True, comment="Delta metrics against previous bucket")
+    top_evidence: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Representative evidence text")
+    signal_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True, comment="Trace signal ids")
+    task_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True, comment="Trace task ids")
+    aggregation_method: Mapped[str] = mapped_column(String(64), nullable=False, default="bucket_avg_v1", comment="Aggregation method version")
+    series_status: Mapped[str] = mapped_column(String(16), nullable=False, default="stable", comment="emerging/stable/cooling")
+    generated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), comment="Row generation time")
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
 
 class CleanedTrendData(Base):

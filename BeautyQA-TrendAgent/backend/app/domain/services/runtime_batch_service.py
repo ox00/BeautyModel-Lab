@@ -6,7 +6,7 @@ from typing import Any, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.infrastructure.database.models import RuntimeBatchRun, RuntimeBatchRunEvent
+from app.infrastructure.database.models import RuntimeBatchItem, RuntimeBatchRun, RuntimeBatchRunEvent
 
 
 class RuntimeBatchService:
@@ -98,3 +98,34 @@ class RuntimeBatchService:
         await self._session.flush()
         await self._session.refresh(batch)
         return batch
+
+    async def add_batch_item(
+        self,
+        *,
+        batch_run_id: int,
+        run_id: str,
+        query_unit_key: str,
+        keyword_id: int | None,
+        keyword: str | None,
+        platform: str,
+        expanded_query: str,
+        query_state_id: int | None,
+        payload: dict[str, Any] | None = None,
+    ) -> RuntimeBatchItem:
+        item = RuntimeBatchItem(
+            batch_run_id=batch_run_id,
+            run_id=run_id,
+            query_unit_key=query_unit_key,
+            keyword_id=keyword_id,
+            keyword=keyword,
+            platform=platform,
+            expanded_query=expanded_query,
+            query_state_id=query_state_id,
+            item_status="planned",
+            retryable=True,
+            attempt_count=0,
+            payload=payload,
+        )
+        self._session.add(item)
+        await self._session.flush()
+        return item

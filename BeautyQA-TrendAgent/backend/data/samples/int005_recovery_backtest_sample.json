@@ -1,0 +1,52 @@
+{
+  "run_id": "int002_recovery_demo",
+  "items": [
+    {
+      "query_unit_key": "发酵赋能__dy__发酵赋能",
+      "keyword_id": 1,
+      "keyword": "发酵赋能",
+      "platform": "dy",
+      "expanded_query": "发酵赋能",
+      "query_state_id": 11
+    },
+    {
+      "query_unit_key": "发酵赋能__xhs__发酵赋能 护肤",
+      "keyword_id": 1,
+      "keyword": "发酵赋能",
+      "platform": "xhs",
+      "expanded_query": "发酵赋能 护肤",
+      "query_state_id": 12
+    },
+    {
+      "query_unit_key": "发酵赋能__bili__发酵赋能 成分",
+      "keyword_id": 1,
+      "keyword": "发酵赋能",
+      "platform": "bili",
+      "expanded_query": "发酵赋能 成分",
+      "query_state_id": 13
+    }
+  ],
+  "simulated_reconcile": {
+    "stale_running_item": "发酵赋能__xhs__发酵赋能 护肤",
+    "action": "requeue_planned"
+  },
+  "simulated_result_update": {
+    "task_result_1": {
+      "query_unit_key": "发酵赋能__dy__发酵赋能",
+      "status": "succeeded"
+    },
+    "task_result_2": {
+      "query_unit_key": "发酵赋能__bili__发酵赋能 成分",
+      "status": "failed_retryable",
+      "error": "network timeout"
+    }
+  },
+  "expected_completion_audit": {
+    "total_items": 3,
+    "succeeded_items": 1,
+    "failed_retryable_items": 1,
+    "failed_terminal_items": 0,
+    "running_items": 1,
+    "completion_classification": "failed"
+  }
+}

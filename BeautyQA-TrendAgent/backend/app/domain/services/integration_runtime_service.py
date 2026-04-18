@@ -18,6 +18,7 @@ from app.domain.services.account_service import AccountService
 from app.domain.services.runtime_batch_service import RuntimeBatchService
 from app.domain.services.runtime_policy_service import DEFAULT_RUNTIME_PROFILE, resolve_runtime_policy
 from app.domain.services.runtime_query_state_service import RuntimeQueryStateService
+from app.domain.services.runtime_recovery_service import RuntimeRecoveryService
 from app.domain.services.keyword_service import KeywordService
 from app.domain.services.task_service import TaskService
 from app.infrastructure.crawler.adapter import CrawlerAdapter
@@ -137,6 +138,7 @@ class IntegrationRuntimeService:
 
                 for task in schedule_result["scheduled_tasks"]:
                     scheduled_tasks.append({**task, "_runtime_policy": effective_policy})
+                await self._record_batch_items(batch_run["id"], run_id, schedule_result["scheduled_tasks"])
 
             for index, task in enumerate(scheduled_tasks):
                 task_result = await self._run_task_pipeline(
@@ -145,6 +147,7 @@ class IntegrationRuntimeService:
                 )
                 task_results.append(task_result)
                 await self._record_task_result(batch_run["id"], run_id, task_result)
+                await self._update_batch_item_from_task_result(run_id, task_result)
                 if index < len(scheduled_tasks) - 1 and int(task["_runtime_policy"]["task_delay_seconds"]) > 0:
                     await asyncio.sleep(int(task["_runtime_policy"]["task_delay_seconds"]))
 
@@ -191,6 +194,8 @@ class IntegrationRuntimeService:
                 status="completed" if report["summary"]["success"] else "failed",
                 error_message="" if report["summary"]["success"] else "One or more tasks failed",
             )
+            completion = await self._finalize_completion_audit(run_id)
+            report["completion_audit"] = completion
             return report
         except Exception as exc:
             await self._finalize_batch_run(
@@ -209,6 +214,62 @@ class IntegrationRuntimeService:
                 error_message=str(exc),
             )
             raise
+
+    async def _record_batch_items(self, batch_run_id: int, run_id: str, scheduled_tasks: list[dict[str, Any]]) -> None:
+        if not scheduled_tasks:
+            return
+        async with async_session_factory() as session:
+            service = RuntimeRecoveryService(session)
+            for task in scheduled_tasks:
+                config = task.get("config", {}) or {}
+                await service.upsert_batch_item(
+                    batch_run_id=batch_run_id,
+                    run_id=run_id,
+                    payload={
+                        "query_unit_key": config.get("query_unit_key", f"task_{task.get('id', 0)}"),
+                        "keyword_id": task.get("keyword_id"),
+                        "keyword": task.get("keyword"),
+                        "platform": task.get("platform"),
+                        "expanded_query": config.get("keywords_for_crawler", task.get("keyword", "")),
+                        "query_state_id": config.get("query_state_id"),
+                        "task_id": task.get("id"),
+                    },
+                )
+                if config.get("query_unit_key"):
+                    await service.mark_dispatched(
+                        run_id=run_id,
+                        query_unit_key=config["query_unit_key"],
+                        task_id=int(task.get("id", 0) or 0),
+                    )
+            await session.commit()
+
+    async def _update_batch_item_from_task_result(self, run_id: str, task_result: dict[str, Any]) -> None:
+        async with async_session_factory() as session:
+            service = RuntimeRecoveryService(session)
+            await service.update_item_from_task_result(
+                run_id=run_id,
+                task_id=int(task_result.get("task_id", 0) or 0),
+                success=bool(task_result.get("success", False)),
+                cleaned_count=int(task_result.get("cleaned_count", 0) or 0),
+                signal_count=int(task_result.get("signal_count", 0) or 0),
+                error_message=str(task_result.get("error", "")),
+            )
+            await session.commit()
+
+    async def _finalize_completion_audit(self, run_id: str) -> dict[str, Any]:
+        async with async_session_factory() as session:
+            service = RuntimeRecoveryService(session)
+            summary = await service.build_completion_audit(run_id=run_id)
+            await session.commit()
+            return {
+                "run_id": summary.run_id,
+                "total_items": summary.total_items,
+                "succeeded_items": summary.succeeded_items,
+                "failed_retryable_items": summary.failed_retryable_items,
+                "failed_terminal_items": summary.failed_terminal_items,
+                "running_items": summary.running_items,
+                "completion_classification": summary.completion_classification,
+            }
 
     async def _maybe_bootstrap_keywords(self, enabled: bool) -> dict[str, Any]:
         async with async_session_factory() as session:
@@ -417,17 +478,28 @@ class IntegrationRuntimeService:
                 "error": signal_result.error if not signal_result.success else "",
             }
 
-        overall_success = cleaning_result.success and signal_result_data["success"]
+        cleaned_count = cleaning_result.data.get("cleaned_count", 0) if cleaning_result.success else 0
+        signal_count = int(signal_result_data["signal_count"] or 0)
+        overall_success = (
+            cleaning_result.success
+            and cleaned_count > 0
+            and signal_result_data["success"]
+            and signal_count > 0
+        )
         error_parts: list[str] = []
         if not cleaning_result.success and cleaning_result.error:
             error_parts.append(f"cleaning_failed: {cleaning_result.error}")
+        if cleaning_result.success and cleaned_count <= 0:
+            error_parts.append("cleaning_empty_output")
         if cleaning_result.success and not signal_result_data["success"] and signal_result_data["error"]:
             error_parts.append(f"signal_failed: {signal_result_data['error']}")
+        if signal_result_data["success"] and signal_count <= 0:
+            error_parts.append("signal_empty_output")
 
         await self._finalize_task_pipeline(
             task_id=task_id,
             keyword_id=crawl_result["keyword_id"],
-            cleaned_count=cleaning_result.data.get("cleaned_count", 0) if cleaning_result.success else 0,
+            cleaned_count=cleaned_count,
             signal_result=signal_result_data,
             success=overall_success,
             error_message="; ".join(error_parts),
@@ -439,8 +511,8 @@ class IntegrationRuntimeService:
             "keyword": crawl_result["keyword"],
             "platform": crawl_result["platform"],
             "success": overall_success,
-            "cleaned_count": cleaning_result.data.get("cleaned_count", 0) if cleaning_result.success else 0,
-            "signal_count": signal_result_data["signal_count"],
+            "cleaned_count": cleaned_count,
+            "signal_count": signal_count,
             "signal_output_file": signal_result_data["output_file"],
             "error": "; ".join(error_parts),
         }
@@ -565,5 +637,19 @@ class IntegrationRuntimeService:
             error = item.get("error", "")
             lines.append(
                 f"- task `{item['task_id']}` `{item['platform']}` `{item['keyword']}` success=`{str(item['success']).lower()}` cleaned=`{cleaned_count}` signals=`{signal_count}` error=`{error}`"
+            )
+        completion = report.get("completion_audit")
+        if completion:
+            lines.extend(
+                [
+                    "",
+                    "## Completion Audit",
+                    f"- completion_classification: `{completion.get('completion_classification', '')}`",
+                    f"- total_items: `{completion.get('total_items', 0)}`",
+                    f"- succeeded_items: `{completion.get('succeeded_items', 0)}`",
+                    f"- failed_retryable_items: `{completion.get('failed_retryable_items', 0)}`",
+                    f"- failed_terminal_items: `{completion.get('failed_terminal_items', 0)}`",
+                    f"- running_items: `{completion.get('running_items', 0)}`",
+                ]
             )
         return "\n".join(lines) + "\n"
