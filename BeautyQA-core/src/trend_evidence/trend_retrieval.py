@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -44,6 +45,25 @@ class TrendSignalRepository:
         inferred_now = now or datetime.now()
         active_config = config or TrendRetrievalConfig()
         signals = [_parse_contract_row(row, inferred_now, active_config) for row in rows]
+        return cls(signals, config=config)
+
+    @classmethod
+    def from_contract_json(
+        cls,
+        json_path: str | Path,
+        *,
+        now: datetime | None = None,
+        config: TrendRetrievalConfig | None = None,
+    ) -> "TrendSignalRepository":
+        payload = json.loads(Path(json_path).read_text(encoding="utf-8"))
+        rows = payload.get("results", [])
+        if rows:
+            first_row = rows[0]
+            if "signal_id" not in first_row:
+                raise ValueError("Runtime ingestion requires first-party trend_signal contract schema (signal_id required).")
+        inferred_now = now or datetime.now()
+        active_config = config or TrendRetrievalConfig()
+        signals = [_parse_contract_json_row(row, inferred_now, active_config) for row in rows]
         return cls(signals, config=config)
 
     @classmethod
@@ -168,6 +188,30 @@ def _parse_contract_row(row: dict[str, str], now_dt: datetime, config: TrendRetr
         trend_score=float(row["trend_score"]),
         confidence=row["confidence"].lower(),
         risk_flag=row["risk_flag"].lower(),
+        observed_at=observed,
+        fresh_until=fresh_until,
+    )
+
+
+def _parse_contract_json_row(row: dict[str, object], now_dt: datetime, config: TrendRetrievalConfig) -> TrendSignal:
+    observed = _parse_datetime(str(row["observed_at"]))
+    fresh_until_raw = str(row.get("fresh_until", "")).strip()
+    fresh_until = _parse_datetime(fresh_until_raw) if fresh_until_raw else observed + timedelta(days=config.freshness_days)
+
+    return TrendSignal(
+        signal_id=str(row["signal_id"]),
+        keyword_id=str(row["keyword_id"]),
+        crawl_task_id=str(row["crawl_task_id"]),
+        normalized_keyword=str(row["normalized_keyword"]),
+        topic_cluster=str(row["topic_cluster"]),
+        trend_type=str(row["trend_type"]),
+        signal_summary=str(row["signal_summary"]),
+        signal_evidence=str(row["signal_evidence"]),
+        source_platform=str(row["source_platform"]),
+        source_url=str(row["source_url"]),
+        trend_score=float(row["trend_score"]),
+        confidence=str(row["confidence"]).lower(),
+        risk_flag=str(row["risk_flag"]).lower(),
         observed_at=observed,
         fresh_until=fresh_until,
     )

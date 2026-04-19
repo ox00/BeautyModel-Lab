@@ -28,6 +28,13 @@ cd BeautyQA-core
 PYTHONPATH=src python3 scripts/run_backtest_qa003.py
 ```
 
+Runtime handoff smoke:
+
+```bash
+cd BeautyQA-core
+PYTHONPATH=src ../.venv/bin/python scripts/run_backtest_qa004_runtime.py
+```
+
 ## Run Tests
 
 ```bash

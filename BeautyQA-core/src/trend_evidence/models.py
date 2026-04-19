@@ -48,3 +48,35 @@ class QAResult:
         "trend_weak_or_missing",
         "trend_filtered_for_safety",
     ] = "trend_weak_or_missing"
+
+
+@dataclass(frozen=True)
+class TrendContextItem:
+    signal_id: str
+    normalized_keyword: str
+    topic_cluster: str
+    trend_type: str
+    signal_summary: str
+    signal_evidence: str
+    source_platform: str
+    source_url: str
+    confidence: ConfidenceLevel
+    risk_flag: RiskLevel
+    trend_score: float
+    fresh_until: str
+    support_count: int | None = None
+    evidence_ids: list[str] = field(default_factory=list)
+    rejection_reason: str | None = None
+
+
+@dataclass(frozen=True)
+class TrendContextBlock:
+    query: str
+    behavior_flag: Literal[
+        "trend_supported",
+        "trend_weak_or_missing",
+        "trend_filtered_for_safety",
+    ]
+    summary: str
+    items: list[TrendContextItem] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)

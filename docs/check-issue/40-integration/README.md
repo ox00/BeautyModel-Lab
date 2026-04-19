@@ -17,3 +17,4 @@ Current sequence:
 - `INT-004-kickoff_cn.md`
 - `INT-005-batch-recovery-and-completion-guarantee.md`
 - `INT-005-kickoff_cn.md`
+- `INT-006-ta-to-qa-runtime-smoke-report.md`

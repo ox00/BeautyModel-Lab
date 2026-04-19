@@ -4,11 +4,13 @@ from pathlib import Path
 import pytest
 
 from trend_evidence.pipeline import QAPipeline
+from trend_evidence.pipeline import default_runtime_handoff_json
 from trend_evidence.trend_retrieval import TrendSignalRepository
 
 
 NOW = datetime(2026, 4, 15, 12, 0, 0)
 SHARED_SAMPLE = Path(__file__).resolve().parents[2] / "data" / "pipeline_samples" / "trend_signal" / "trend_signal_first_party_sample.csv"
+RUNTIME_HANDOFF_JSON = default_runtime_handoff_json()
 
 
 def _contract_repo() -> TrendSignalRepository:
@@ -86,3 +88,14 @@ def test_policy_hook_is_pluggable_and_optional() -> None:
     result = pipeline.run("最近猛药焕肤很火，值得跟吗", now=NOW)
 
     assert result.policy_output == "hook:trend_filtered_for_safety:high"
+
+
+def test_runtime_handoff_json_loader_and_context_block() -> None:
+    repo = TrendSignalRepository.from_contract_json(RUNTIME_HANDOFF_JSON, now=datetime(2026, 4, 19, 12, 0, 0))
+    pipeline = QAPipeline(repo)
+    block = pipeline.build_trend_context_block("最近快速美白很火，值得跟吗", now=datetime(2026, 4, 19, 12, 0, 0))
+
+    assert block.items
+    assert block.items[0].signal_id
+    assert block.items[0].normalized_keyword == "快速美白"
+    assert block.behavior_flag in {"trend_supported", "trend_filtered_for_safety", "trend_weak_or_missing"}

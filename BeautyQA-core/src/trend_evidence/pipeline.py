@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Callable
 
-from .models import QAResult
+from .models import QAResult, TrendContextBlock, TrendContextItem
 from .trend_retrieval import TrendSignalRepository
 
 
@@ -60,3 +61,51 @@ class QAPipeline:
             policy_output=self._policy_hook(result),
             behavior_flag=result.behavior_flag,
         )
+
+    def build_trend_context_block(self, query: str, *, now: datetime | None = None, limit: int = 5) -> TrendContextBlock:
+        result = self.run(query, now=now)
+        items: list[TrendContextItem] = []
+        for evidence in result.trend_evidence[:limit]:
+            items.append(
+                TrendContextItem(
+                    signal_id=evidence.signal.signal_id,
+                    normalized_keyword=evidence.signal.normalized_keyword,
+                    topic_cluster=evidence.signal.topic_cluster,
+                    trend_type=evidence.signal.trend_type,
+                    signal_summary=evidence.signal.signal_summary,
+                    signal_evidence=evidence.signal.signal_evidence,
+                    source_platform=evidence.signal.source_platform,
+                    source_url=evidence.signal.source_url,
+                    confidence=evidence.signal.confidence,
+                    risk_flag=evidence.signal.risk_flag,
+                    trend_score=evidence.signal.trend_score,
+                    fresh_until=evidence.signal.fresh_until.isoformat(),
+                    rejection_reason=evidence.rejection_reason,
+                )
+            )
+
+        if result.selected_evidence is not None:
+            summary = (
+                f"Selected {result.selected_evidence.signal.normalized_keyword} trend evidence "
+                f"from {result.selected_evidence.signal.source_platform}."
+            )
+        elif result.behavior_flag == "trend_filtered_for_safety":
+            summary = "Trend evidence was retrieved but filtered from the strong-evidence path."
+        else:
+            summary = "No strong trend evidence was selected; downstream QA should degrade gracefully."
+
+        return TrendContextBlock(
+            query=query,
+            behavior_flag=result.behavior_flag,
+            summary=summary,
+            items=items,
+            metadata=result.metadata,
+        )
+
+
+def default_runtime_handoff_csv() -> Path:
+    return Path(__file__).resolve().parents[3] / "data" / "handoff" / "trend_signal" / "current" / "trend_signal_latest.csv"
+
+
+def default_runtime_handoff_json() -> Path:
+    return Path(__file__).resolve().parents[3] / "data" / "handoff" / "trend_signal" / "current" / "trend_signal_latest.json"
